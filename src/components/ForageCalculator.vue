@@ -46,12 +46,12 @@ function alreadyExists<T>(collection: T[], item: T): boolean {
 }
 
 export default defineComponent({
-  name: 'HelloWorld',
+  name: 'ForageCalculator',
   components: {
     FoodItemTable,
   },
   props: {},
-  setup: () => {
+  setup() {
     const headers = FoodItemService.getHeaders();
     const products = FoodItemService.getProducts();
 
