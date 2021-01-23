@@ -26,28 +26,30 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import { FoodItemRecord } from '@/models/foodItem.model';
 
-export default {
+export default defineComponent({
   name: 'FoodItemTable',
   props: {
-    products: Object as () => FoodItemRecord,
+    products: Array as () => FoodItemRecord[],
     headers: Array,
   },
-  setup(props: { headers: string[]; products: FoodItemRecord[] }) {
-    // TODO this will probably be better to get from parent component
-    return {
-      sums: props.products.reduce((acc: number[], curr) => {
-        Object.values(curr).forEach((value, idx) => {
-          if (typeof value === 'number') {
-            acc[idx] = acc[idx] ? acc[idx] + value : value;
-          }
-        });
-        return acc;
-      }, []),
-    };
+  computed: {
+    sums(): number[] {
+      return (
+        this.products?.reduce((acc: number[], curr) => {
+          Object.values(curr).forEach((value, idx) => {
+            if (typeof value === 'number') {
+              acc[idx] = acc[idx] ? acc[idx] + value : value;
+            }
+          });
+          return acc;
+        }, []) ?? []
+      );
+    },
   },
-};
+});
 </script>
 
 <style scoped>
@@ -63,5 +65,17 @@ td {
 thead .header_label {
   margin-left: 10px;
   margin-right: 10px;
+}
+
+thead tr {
+  background-color: grey;
+}
+
+tbody tr:hover {
+  background-color: lightgrey;
+}
+
+tfoot tr {
+  background-color: beige;
 }
 </style>
