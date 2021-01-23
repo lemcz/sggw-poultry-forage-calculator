@@ -1,7 +1,7 @@
 export type FoodItemRecord = FoodItem | FoodCustomProperty;
 
 export interface FoodItem {
-  name: string;
+  label: string;
   percentage: number;
   cost: number;
   dryWeight?: number;

@@ -2,24 +2,24 @@ import { FoodItemRecord } from '@/models/foodItem.model';
 
 class FoodItemSingleton {
   headers = [
-    'Produkt',
-    '%',
-    'Cena',
-    'Sucha masa',
-    'Energia',
-    'Białko ogólne (g)',
-    'Lizyna (g)',
-    'Metionina (g)',
-    'Tryptofan (g)',
-    'Arginina (g)',
-    'Ca (g)',
-    'P ogólny (g)',
-    'Na (g)',
+    { label: 'Produkt', property: 'label' },
+    { label: '%', property: 'percentage' },
+    { label: 'Cena', property: 'cost' },
+    { label: 'Sucha masa', property: 'dryWeight' },
+    { label: 'Energia', property: 'energy' },
+    { label: 'Białko ogólne (g)', property: 'protein' },
+    { label: 'Lizyna (g)', property: 'lysine' },
+    { label: 'Metionina (g)', property: 'methionine' },
+    { label: 'Tryptofan (g)', property: 'tryptophan' },
+    { label: 'Arginina (g)', property: 'arginine' },
+    { label: 'Ca (g)', property: 'calcium' },
+    { label: 'P ogólny (g)', property: 'phosphorus' },
+    { label: 'Na (g)', property: 'sodium' },
   ];
 
   products: FoodItemRecord[] = [
     {
-      name: 'Śruta jęczmienna',
+      label: 'Śruta jęczmienna',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -28,7 +28,7 @@ class FoodItemSingleton {
       lysine: 0,
     },
     {
-      name: 'Śruta pszenna',
+      label: 'Śruta pszenna',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -36,7 +36,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta pszenżytnia',
+      label: 'Śruta pszenżytnia',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -44,7 +44,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta kukurydziana',
+      label: 'Śruta kukurydziana',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -52,7 +52,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta z owsa',
+      label: 'Śruta z owsa',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -60,7 +60,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Otręby pszenne',
+      label: 'Otręby pszenne',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -68,7 +68,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta z bobiku',
+      label: 'Śruta z bobiku',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -76,7 +76,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta z łubinu żółtego',
+      label: 'Śruta z łubinu żółtego',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -84,7 +84,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta z grochu',
+      label: 'Śruta z grochu',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -92,7 +92,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Pełnotłusta śruta z rzepaku 00',
+      label: 'Pełnotłusta śruta z rzepaku',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -100,7 +100,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Pełnotlusta soja ekstrudowana',
+      label: 'Pełnotlusta soja ekstrudowana',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -108,7 +108,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta poekstrakcyjna rzepakowa',
+      label: 'Śruta poekstrakcyjna rzepakowa',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -116,7 +116,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta poekstrakcyjna sojowa (42-46)',
+      label: 'Śruta poekstrakcyjna sojowa (42-46)',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -124,7 +124,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta poekstrakcyjna sojowa (>46 b.o.)',
+      label: 'Śruta poekstrakcyjna sojowa (>46 b.o.)',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -132,7 +132,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'Śruta poekstrakcyjna słonecznikowa (obł)',
+      label: 'Śruta poekstrakcyjna słonecznikowa (obł)',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
@@ -140,7 +140,7 @@ class FoodItemSingleton {
       protein: 0,
     },
     {
-      name: 'DDGS kukurydziany',
+      label: 'DDGS kukurydziany',
       percentage: 0,
       cost: 0,
       dryWeight: 0,
