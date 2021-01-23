@@ -1,22 +1,35 @@
 <template>
-  <div class="hello">
+  <div>
     <h1>Kalkulator receptur mieszanek dla drobiu</h1>
-    <FoodItemTable
-      v-bind:products="products"
-      v-bind:headers="headers"
-    ></FoodItemTable>
+    <FoodItemTable v-bind:products="products" v-bind:headers="headers"></FoodItemTable>
     <div>
-      <form v-on:submit.prevent="addIngredient()">
-        <div>
-          <label for="ingredient">
-            <span>Składnik</span>
+      <form v-on:submit.prevent="addNutrient()">
+        <div class="form-input">
+          <label for="nutrient">
+            <span>Składnik odżywczy</span>
           </label>
-          <input type="text" id="ingredient" v-model="ingredient" />
+          <input type="text" id="nutrient" v-model="nutrient" />
         </div>
-        <button v-on:click="addIngredient()">
+        <button>
           Dodaj
         </button>
       </form>
+    </div>
+    <div>
+      <form v-on:submit.prevent="addIngredient()">
+        <div class="form-input">
+          <label for="ingredient">
+            <span>Produkt</span>
+          </label>
+          <input type="text" id="ingredient" v-model="ingredient" />
+        </div>
+        <button>
+          Dodaj
+        </button>
+      </form>
+    </div>
+    <div class="information-panel">
+      <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
     </div>
   </div>
 </template>
@@ -25,6 +38,7 @@
 import { defineComponent, ref } from 'vue';
 import { isEqual } from 'lodash-es';
 import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
+
 import { FoodItemService } from './foodItem/foodItem.service';
 
 function alreadyExists<T>(collection: T[], item: T): boolean {
@@ -44,23 +58,34 @@ export default defineComponent({
     return {
       headers,
       products,
+      nutrient: ref(''),
       ingredient: ref(''),
     };
   },
   methods: {
-    addIngredient() {
-      const newIngredient = {
-        label: this.ingredient,
-        property: this.ingredient,
+    addNutrient() {
+      const nutrient = {
+        label: this.nutrient,
+        property: this.nutrient,
       };
-      if (!this.ingredient || alreadyExists(this.headers, newIngredient)) {
+      if (!this.nutrient || alreadyExists(this.headers, nutrient)) {
         return;
       }
 
-      this.headers = [
-        ...this.headers,
-        { label: this.ingredient, property: this.ingredient },
-      ];
+      this.headers = [...this.headers, nutrient];
+      this.nutrient = '';
+    },
+    addIngredient() {
+      const ingredient = {
+        label: this.ingredient,
+        percentage: 0,
+        cost: 0,
+      };
+      if (!this.ingredient || alreadyExists(this.products, ingredient)) {
+        return;
+      }
+
+      this.products = [...this.products, ingredient];
       this.ingredient = '';
     },
   },
@@ -82,5 +107,9 @@ li {
 }
 a {
   color: #42b983;
+}
+.form-input {
+  display: flex;
+  flex-direction: column;
 }
 </style>
