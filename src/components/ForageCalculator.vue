@@ -16,13 +16,14 @@
       </form>
     </div>
     <div>
-      <form v-on:submit.prevent="addIngredient()">
-        <div class="form-input">
-          <label for="ingredient">
-            <span>Produkt</span>
-          </label>
-          <input type="text" id="ingredient" v-model="ingredient" />
-        </div>
+      <form v-on:submit.prevent="addIngredient()" style="display: flex;">
+        <component
+          v-for="field in schema"
+          :key="field.property"
+          :is="field.type"
+          v-model="ingredient[field.property]"
+          v-bind="field"
+        ></component>
         <button>
           Dodaj
         </button>
@@ -38,6 +39,9 @@
 import { defineComponent, ref } from 'vue';
 import { isEqual } from 'lodash-es';
 import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
+import NumberField from '@/components/number-field/NumberField.vue';
+import TextField from '@/components/text-field/TextField.vue';
+import { FieldMode } from '@/models/fieldMode';
 
 import { FoodItemService } from './foodItem/foodItem.service';
 
@@ -49,17 +53,31 @@ export default defineComponent({
   name: 'ForageCalculator',
   components: {
     FoodItemTable,
+    TextField,
+    NumberField,
   },
-  props: {},
   setup() {
     const headers = FoodItemService.getHeaders();
     const products = FoodItemService.getProducts();
+    // TODO add types to headers
+    const schema = headers.map((header) => ({
+      type: 'TextField',
+      mode: FieldMode.Edit,
+      property: header.property,
+      label: header.label,
+      placeholder: header.label,
+    }));
 
     return {
+      schema: ref(schema),
       headers,
       products,
       nutrient: ref(''),
-      ingredient: ref(''),
+      ingredient: ref({
+        label: 'Foobar',
+        percentage: 10,
+        cost: 420,
+      }),
     };
   },
   methods: {
@@ -76,17 +94,24 @@ export default defineComponent({
       this.nutrient = '';
     },
     addIngredient() {
-      const ingredient = {
-        label: this.ingredient,
-        percentage: 0,
-        cost: 0,
-      };
-      if (!this.ingredient || alreadyExists(this.products, ingredient)) {
+      if (!this.ingredient.label || alreadyExists(this.products, this.ingredient)) {
         return;
       }
 
-      this.products = [...this.products, ingredient];
-      this.ingredient = '';
+      this.products = [
+        ...this.products,
+        // TODO clean this up after adding types to headers
+        {
+          ...this.ingredient,
+          percentage: parseInt(this.ingredient.percentage as unknown as string),
+          cost: parseInt(this.ingredient.cost as unknown as string),
+        },
+      ];
+      this.ingredient = {
+        label: '',
+        percentage: 0,
+        cost: 0,
+      };
     },
   },
 });
