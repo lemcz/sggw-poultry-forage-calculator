@@ -26,8 +26,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { FoodItemRecord } from '@/models/foodItem.model';
+import { calculateSums } from '@/helpers/collection-helpers';
 
 export default defineComponent({
   name: 'FoodItemTable',
@@ -35,19 +36,11 @@ export default defineComponent({
     products: Array as () => FoodItemRecord[],
     headers: Array,
   },
-  computed: {
-    sums(): number[] {
-      return (
-        this.products?.reduce((acc: number[], curr) => {
-          Object.values(curr).forEach((value, idx) => {
-            if (typeof value === 'number') {
-              acc[idx] = acc[idx] ? acc[idx] + value : value;
-            }
-          });
-          return acc;
-        }, []) ?? []
-      );
-    },
+  setup(props) {
+    const sums = computed(() => calculateSums(props.products));
+    return {
+      sums,
+    };
   },
 });
 </script>
