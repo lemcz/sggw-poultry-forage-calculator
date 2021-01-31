@@ -4,12 +4,7 @@
     <FoodItemTable v-bind:products="products" v-bind:headers="headers"></FoodItemTable>
     <div>
       <form v-on:submit.prevent="addNutrient()">
-        <div class="form-input">
-          <label for="nutrient">
-            <span>Składnik odżywczy</span>
-          </label>
-          <input type="text" id="nutrient" v-model="nutrient" />
-        </div>
+        <TextField :is="'TextField'" v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
         <div>
           <button>
             Dodaj
@@ -79,6 +74,7 @@ export default defineComponent({
         percentage: 10,
         cost: 420,
       }),
+      FieldMode,
     };
   },
   methods: {
