@@ -1,4 +1,4 @@
-import { FieldType } from '@/components/foodItem/foodItem.service';
+import { FieldType } from '@/helpers/food-item.service';
 import { FieldMode } from '@/models/fieldMode';
 
 export interface NutrientItem {

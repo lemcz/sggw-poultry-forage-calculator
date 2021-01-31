@@ -47,8 +47,7 @@ import TextField from '@/components/text-field/TextField.vue';
 import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
 import { getHeaderType } from '@/helpers/food-item-table';
-
-import { FieldType, FoodItemService } from './foodItem/foodItem.service';
+import { FieldType, FoodItemService } from '@/helpers/food-item.service';
 
 export default defineComponent({
   name: 'ForageCalculator',

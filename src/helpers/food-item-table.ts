@@ -1,4 +1,4 @@
-import { FieldType } from '@/components/foodItem/foodItem.service';
+import { FieldType } from '@/helpers/food-item.service';
 
 export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | 'SelectField' | '' {
   switch (type) {
