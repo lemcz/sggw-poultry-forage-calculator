@@ -1,20 +1,27 @@
-import { FoodItemRecord } from '@/models/foodItem.model';
+import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
+import { FieldMode } from '@/models/fieldMode';
+
+export enum FieldType {
+  Text = 'text',
+  Number = 'number',
+  Select = 'select',
+}
 
 class FoodItemSingleton {
-  headers = [
-    { label: 'Produkt', property: 'label' },
-    { label: '%', property: 'percentage' },
-    { label: 'Cena', property: 'cost' },
-    { label: 'Sucha masa', property: 'dryWeight' },
-    { label: 'Energia', property: 'energy' },
-    { label: 'Białko ogólne (g)', property: 'protein' },
-    { label: 'Lizyna (g)', property: 'lysine' },
-    { label: 'Metionina (g)', property: 'methionine' },
-    { label: 'Tryptofan (g)', property: 'tryptophan' },
-    { label: 'Arginina (g)', property: 'arginine' },
-    { label: 'Ca (g)', property: 'calcium' },
-    { label: 'P ogólny (g)', property: 'phosphorus' },
-    { label: 'Na (g)', property: 'sodium' },
+  headers: NutrientItem[] = [
+    { label: 'Produkt', property: 'label', type: FieldType.Text, mode: FieldMode.View },
+    { label: '%', property: 'percentage', type: FieldType.Number },
+    { label: 'Cena', property: 'cost', type: FieldType.Number },
+    { label: 'Sucha masa', property: 'dryWeight', type: FieldType.Number },
+    { label: 'Energia', property: 'energy', type: FieldType.Number },
+    { label: 'Białko ogólne (g)', property: 'protein', type: FieldType.Number },
+    { label: 'Lizyna (g)', property: 'lysine', type: FieldType.Number },
+    { label: 'Metionina (g)', property: 'methionine', type: FieldType.Number },
+    { label: 'Tryptofan (g)', property: 'tryptophan', type: FieldType.Number },
+    { label: 'Arginina (g)', property: 'arginine', type: FieldType.Number },
+    { label: 'Ca (g)', property: 'calcium', type: FieldType.Number },
+    { label: 'P ogólny (g)', property: 'phosphorus', type: FieldType.Number },
+    { label: 'Na (g)', property: 'sodium', type: FieldType.Number },
   ];
 
   products: FoodItemRecord[] = [
@@ -148,9 +155,6 @@ class FoodItemSingleton {
       protein: 0,
     },
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
 
   getProducts() {
     return this.products;

@@ -1,3 +1,13 @@
+import { FieldType } from '@/components/foodItem/foodItem.service';
+import { FieldMode } from '@/models/fieldMode';
+
+export interface NutrientItem {
+  label: string;
+  property: string;
+  type?: FieldType;
+  mode?: FieldMode;
+}
+
 export type FoodItemRecord = FoodItem | FoodCustomProperty;
 
 export interface FoodItem {
