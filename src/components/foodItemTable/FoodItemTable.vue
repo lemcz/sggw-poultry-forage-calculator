@@ -28,8 +28,8 @@
     </tbody>
     <tfoot>
       <tr>
-        <td><strong>Suma</strong></td>
-        <td v-for="sum in sums" v-bind:key="sum">
+        <td><strong>W 1 kg mieszanki jest: </strong></td>
+        <td v-for="(sum, index) in sums" v-bind:key="index">
           {{ sum !== undefined ? sum : '-' }}
         </td>
       </tr>

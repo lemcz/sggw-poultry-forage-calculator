@@ -6,7 +6,7 @@
     <input
       type="number"
       v-if="mode === Mode.Edit"
-      v-on:input="$emit('update:modelValue', $event.target.value)"
+      v-on:input="$emit('update:modelValue', parseFloat($event.target.value))"
       :value="modelValue"
       :id="property"
       :name="property"
