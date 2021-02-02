@@ -9,7 +9,7 @@
     ></FoodItemTable>
     <div>
       <form v-on:submit.prevent="addNutrient()">
-        <TextField :is="'TextField'" v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
+        <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
         <div>
           <button>
             Dodaj
@@ -37,6 +37,20 @@
       <button v-on:click="resetToDefaults()">Reset do fabrycznych</button>
     </div>
     <div class="information-panel">
+      <SelectField
+        v-model="forageType"
+        v-on:change="logChange(forageType)"
+        :label="'Typ paszy'"
+        :mode="FieldMode.Edit"
+        :options="[
+          { value: ForageType.Starter, label: 'Starter' },
+          { value: ForageType.Prester, label: 'Prester' },
+          { value: ForageType.Grower, label: 'Grower' },
+          { value: ForageType.Finiszer, label: 'Finiszer' },
+          { value: ForageType.Nioska1, label: 'Nioska I' },
+          { value: ForageType.Nioska2, label: 'Nioska II' },
+        ]"
+      ></SelectField>
       <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
     </div>
   </div>
@@ -46,6 +60,7 @@
 import { computed, defineComponent, ref } from 'vue';
 import TextField from '@/components/text-field/TextField.vue';
 import NumberField from '@/components/number-field/NumberField.vue';
+import SelectField from '@/components/select-field/SelectField.vue';
 import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
 import { FieldType } from '@/helpers/food-item.service';
@@ -53,12 +68,22 @@ import { alreadyExists } from '@/helpers/collection-helpers';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 
+export enum ForageType {
+  Prester,
+  Starter,
+  Grower,
+  Finiszer,
+  Nioska1,
+  Nioska2,
+}
+
 export default defineComponent({
   name: 'ForageCalculator',
   components: {
     FoodItemTable,
     TextField,
     NumberField,
+    SelectField,
   },
   setup() {
     const { headers: defaultHeaders, products: defaultProducts } = getDefaultState();
@@ -81,6 +106,7 @@ export default defineComponent({
       cost: 420,
     });
     const nutrient = ref('');
+    const forageType = ref(ForageType.Grower);
 
     return {
       schema,
@@ -88,7 +114,12 @@ export default defineComponent({
       products,
       nutrient,
       ingredient,
+      forageType,
       FieldMode,
+      ForageType,
+      logChange(type: ForageType) {
+        console.log('registered select field change', type);
+      },
       resetToDefaults() {
         const { products: defaultProducts, headers: defaultHeaders } = getDefaultState();
         products.value = defaultProducts;
