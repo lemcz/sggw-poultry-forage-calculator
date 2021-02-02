@@ -23,7 +23,7 @@ import { defineComponent } from 'vue';
 import { FieldMode } from '@/models/fieldMode';
 
 export default defineComponent({
-  name: 'TextInput',
+  name: 'TextField',
   props: ['property', 'label', 'placeholder', 'mode', 'modelValue'],
   setup() {
     return {
