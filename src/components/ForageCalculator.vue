@@ -1,7 +1,12 @@
 <template>
   <div>
     <h1>Kalkulator receptur mieszanek dla drobiu</h1>
-    <FoodItemTable v-bind:products="products" v-bind:headers="headers"></FoodItemTable>
+    <FoodItemTable
+      v-bind:products="products"
+      v-bind:headers="headers"
+      @select-change="updateSelected"
+      @product-remove="removeProduct"
+    ></FoodItemTable>
     <div>
       <form v-on:submit.prevent="addNutrient()">
         <TextField :is="'TextField'" v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
@@ -43,6 +48,7 @@ import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
 import { getHeaderType } from '@/helpers/food-item-table';
 import { FieldType, FoodItemService } from '@/helpers/food-item.service';
+import { FoodItemRecord } from '@/models/foodItem.model';
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -53,7 +59,7 @@ export default defineComponent({
   },
   setup() {
     const headers = ref(FoodItemService.getHeaders());
-    const products = FoodItemService.getProducts();
+    const products = ref(FoodItemService.getProducts());
     const schema = computed(() =>
       headers.value.map((header) => ({
         type: getHeaderType(header.type),
@@ -75,6 +81,13 @@ export default defineComponent({
         cost: 420,
       }),
       FieldMode,
+      updateSelected(...args: any[]): void {
+        // TODO finish this (calculate optimal Forage with selected items)
+        console.log('update selected!', ...args);
+      },
+      removeProduct(product: FoodItemRecord): void {
+        products.value = products.value.filter(({ label }) => label !== product.label);
+      },
     };
   },
   methods: {
@@ -98,11 +111,8 @@ export default defineComponent({
 
       this.products = [
         ...this.products,
-        // TODO clean this up after adding types to headers
         {
           ...this.ingredient,
-          percentage: parseInt((this.ingredient.percentage as unknown) as string),
-          cost: parseInt((this.ingredient.cost as unknown) as string),
         },
       ];
       this.ingredient = {

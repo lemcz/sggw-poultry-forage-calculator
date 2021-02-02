@@ -6,6 +6,9 @@
         <th v-for="header in headers" v-bind:key="header.property">
           <span class="header_label">{{ header.label }}</span>
         </th>
+        <th>
+          <span class="header_label">Akcje</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +26,9 @@
         </td>
         <td v-for="header in headers" v-bind:key="header.property">
           <span>{{ product[header.property] }}</span>
+        </td>
+        <td class="actions">
+          <button v-on:click="$emit('product-remove', product)">Usuń</button>
         </td>
       </tr>
     </tbody>
@@ -50,7 +56,7 @@ export default defineComponent({
     products: Array as () => FoodItemRecord[],
     headers: Array,
   },
-  emits: ['select-change'],
+  emits: ['select-change', 'product-remove'],
   setup(props, { emit }) {
     const sums = computed(() => calculateSums(props.products));
 
@@ -111,5 +117,9 @@ tbody tr:hover {
 
 tfoot tr {
   background-color: beige;
+}
+
+.actions button {
+  cursor: pointer;
 }
 </style>
