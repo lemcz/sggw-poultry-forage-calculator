@@ -1,4 +1,5 @@
-import { FieldType } from '@/helpers/food-item.service';
+import { FieldType, FoodItemService } from '@/helpers/food-item.service';
+import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 
 export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | 'SelectField' | '' {
   switch (type) {
@@ -10,4 +11,23 @@ export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | '
       return 'SelectField';
   }
   return '';
+}
+
+export function fillProductWithDefaults(product: any, headers: NutrientItem[]): FoodItemRecord {
+  return {
+    ...product,
+    ...headers.reduce((acc, header) => ({ ...acc, [header.property]: product[header.property] ?? 0 }), {}),
+  };
+}
+
+export function getDefaultState(): { headers: NutrientItem[]; products: FoodItemRecord[] } {
+  const headers = FoodItemService.getHeaders();
+  const products = FoodItemService.getProducts().map((product: FoodItemRecord) =>
+    fillProductWithDefaults(product, headers),
+  );
+
+  return {
+    headers,
+    products,
+  };
 }

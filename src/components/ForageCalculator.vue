@@ -18,7 +18,7 @@
       </form>
     </div>
     <div>
-      <form v-on:submit.prevent="addIngredient()" style="display: flex; flex-wrap: wrap;">
+      <form class="flex-wrap" v-on:submit.prevent="addIngredient()">
         <component
           v-for="field in schema"
           :key="field.property"
@@ -33,6 +33,9 @@
         </div>
       </form>
     </div>
+    <div>
+      <button v-on:click="resetToDefaults()">Reset do fabrycznych</button>
+    </div>
     <div class="information-panel">
       <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
     </div>
@@ -41,14 +44,14 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
-import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
-import NumberField from '@/components/number-field/NumberField.vue';
 import TextField from '@/components/text-field/TextField.vue';
+import NumberField from '@/components/number-field/NumberField.vue';
+import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
+import { FieldType } from '@/helpers/food-item.service';
 import { alreadyExists } from '@/helpers/collection-helpers';
-import { getHeaderType } from '@/helpers/food-item-table';
-import { FieldType, FoodItemService } from '@/helpers/food-item.service';
-import { FoodItemRecord } from '@/models/foodItem.model';
+import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
+import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -58,8 +61,10 @@ export default defineComponent({
     NumberField,
   },
   setup() {
-    const headers = ref(FoodItemService.getHeaders());
-    const products = ref(FoodItemService.getProducts());
+    const { headers: defaultHeaders, products: defaultProducts } = getDefaultState();
+    const headers = ref(defaultHeaders);
+    const products = ref(defaultProducts);
+
     const schema = computed(() =>
       headers.value.map((header) => ({
         type: getHeaderType(header.type),
@@ -70,57 +75,62 @@ export default defineComponent({
       })),
     );
 
+    const ingredient = ref({
+      label: 'Foobar',
+      percentage: 10,
+      cost: 420,
+    });
+    const nutrient = ref('');
+
     return {
       schema,
       headers,
       products,
-      nutrient: ref(''),
-      ingredient: ref({
-        label: 'Foobar',
-        percentage: 10,
-        cost: 420,
-      }),
+      nutrient,
+      ingredient,
       FieldMode,
-      updateSelected(...args: any[]): void {
+      resetToDefaults() {
+        const { products: defaultProducts, headers: defaultHeaders } = getDefaultState();
+        products.value = defaultProducts;
+        headers.value = defaultHeaders;
+      },
+      updateSelected(products: FoodItemRecord[]): void {
         // TODO finish this (calculate optimal Forage with selected items)
-        console.log('update selected!', ...args);
+        console.log('update selected!', products);
       },
       removeProduct(product: FoodItemRecord): void {
         products.value = products.value.filter(({ label }) => label !== product.label);
       },
+      addNutrient() {
+        const newNutrient: NutrientItem = {
+          label: nutrient.value,
+          property: nutrient.value,
+          type: FieldType.Number,
+        };
+        if (!nutrient.value || alreadyExists(headers.value, newNutrient)) {
+          return;
+        }
+
+        headers.value = [...headers.value, newNutrient];
+        products.value = products.value.map((product) => ({
+          ...product,
+          ...fillProductWithDefaults(product, headers.value),
+        }));
+        nutrient.value = '';
+      },
+      addIngredient() {
+        if (!ingredient.value.label || alreadyExists(products.value, ingredient.value)) {
+          return;
+        }
+
+        products.value = [...products.value, fillProductWithDefaults(ingredient.value, headers.value)];
+        ingredient.value = {
+          label: '',
+          percentage: 0,
+          cost: 0,
+        };
+      },
     };
-  },
-  methods: {
-    addNutrient() {
-      const nutrient = {
-        label: this.nutrient,
-        property: this.nutrient,
-        type: FieldType.Number,
-      };
-      if (!this.nutrient || alreadyExists(this.headers, nutrient)) {
-        return;
-      }
-
-      this.headers = [...this.headers, nutrient];
-      this.nutrient = '';
-    },
-    addIngredient() {
-      if (!this.ingredient.label || alreadyExists(this.products, this.ingredient)) {
-        return;
-      }
-
-      this.products = [
-        ...this.products,
-        {
-          ...this.ingredient,
-        },
-      ];
-      this.ingredient = {
-        label: '',
-        percentage: 0,
-        cost: 0,
-      };
-    },
   },
 });
 </script>
@@ -140,5 +150,10 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>
