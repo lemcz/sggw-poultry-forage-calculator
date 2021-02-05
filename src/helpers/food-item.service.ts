@@ -7,6 +7,15 @@ export enum FieldType {
   Select = 'select',
 }
 
+export enum ForageType {
+  Prester,
+  Starter,
+  Grower,
+  Finiszer,
+  Nioska1,
+  Nioska2,
+}
+
 class FoodItemSingleton {
   headers: NutrientItem[] = [
     { label: 'Produkt', property: 'label', type: FieldType.Text, mode: FieldMode.View },

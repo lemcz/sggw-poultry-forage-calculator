@@ -39,7 +39,7 @@
     <div class="information-panel">
       <SelectField
         v-model="forageType"
-        v-on:change="logChange(forageType)"
+        v-on:change="changeForageRequirements(forageType)"
         :label="'Typ paszy'"
         :mode="FieldMode.Edit"
         :options="[
@@ -63,19 +63,10 @@ import NumberField from '@/components/number-field/NumberField.vue';
 import SelectField from '@/components/select-field/SelectField.vue';
 import FoodItemTable from '@/components/foodItemTable/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
-import { FieldType } from '@/helpers/food-item.service';
+import { FieldType, ForageType } from '@/helpers/food-item.service';
 import { alreadyExists } from '@/helpers/collection-helpers';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
-
-export enum ForageType {
-  Prester,
-  Starter,
-  Grower,
-  Finiszer,
-  Nioska1,
-  Nioska2,
-}
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -117,7 +108,9 @@ export default defineComponent({
       forageType,
       FieldMode,
       ForageType,
-      logChange(type: ForageType) {
+      // TODO rename this method
+      changeForageRequirements(type: ForageType) {
+        // TODO display different forage requirements for different forage type
         console.log('registered select field change', type);
       },
       resetToDefaults() {
