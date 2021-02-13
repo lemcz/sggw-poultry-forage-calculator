@@ -37,12 +37,13 @@
         :options="limitOptions"
       ></SelectField>
       <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
-      <button v-on:click="calculateLP()">Wyznacz automatycznie</button>
+      <button v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { computed, defineComponent, ref } from 'vue';
 import TextField from '@/components/text-field/TextField.vue';
 import AddButton from '@/components/add-button/AddButton.vue';
@@ -85,9 +86,8 @@ export default defineComponent({
       cost: 420,
     });
     const nutrient = ref('');
-    // TODO move forageType select options to a variable
     // TODO finish other types in the food-item.service
-    // TODO display "limits" for specific food type
+    // TODO display "limits" for specific forageType
     // TODO add possibility to display amount of g's in kg's in a table (2 columns per nutrient)
     // TODO edit the cells in the table on click
 
@@ -111,8 +111,40 @@ export default defineComponent({
       forageType,
       FieldMode,
       ForageType,
-      calculateLP(): void {
+      async calculateMinimalCostMix() {
         console.log('this will provide some output for the LP problem');
+        // TODO pass the data properly (mapped from the chosen products)
+        try {
+          const suggestedMix = await axios.post('http://localhost:3000/api/calculate-feed-mix', {
+            optimize: 'cost',
+            opType: 'min',
+            constraints: {
+              plane: {
+                max: 44,
+              },
+              person: {
+                max: 512,
+              },
+            },
+            variables: {
+              brit: {
+                capacity: 20000,
+                plane: 1,
+                person: 8,
+                cost: 5000,
+              },
+              yank: {
+                capacity: 30000,
+                plane: 1,
+                person: 16,
+                cost: 9000,
+              },
+            },
+          });
+          console.info('got some mix!', suggestedMix);
+        } catch (e) {
+          // TODO handle error - display one (library - vee-validate)
+        }
       },
       changeForageRequirements(type: ForageType) {
         // TODO display different forage requirements for different forage type
