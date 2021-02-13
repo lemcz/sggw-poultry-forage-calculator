@@ -52,6 +52,7 @@
         ]"
       ></SelectField>
       <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
+      <button v-on:click="calculateLP()">Policz mje automatycznie :3</button>
     </div>
   </div>
 </template>
@@ -98,6 +99,11 @@ export default defineComponent({
     });
     const nutrient = ref('');
     const forageType = ref(ForageType.Grower);
+    // TODO move forageType select options to a variable
+    // TODO finish other types in the food-item.service
+    // TODO display "limits" for specific food type
+    // TODO add possibility to display amount of g's in kg's in a table (2 columns per nutrient)
+    // TODO edit the cells in the table on click
 
     return {
       schema,
@@ -108,6 +114,9 @@ export default defineComponent({
       forageType,
       FieldMode,
       ForageType,
+      calculateLP(): void {
+        console.log('this will provide some output for the LP problem');
+      },
       // TODO rename this method
       changeForageRequirements(type: ForageType) {
         // TODO display different forage requirements for different forage type

@@ -16,6 +16,8 @@ export enum ForageType {
   Nioska2,
 }
 
+type Foo = Record<ForageType, { [k: string]: { min?: number; max?: number } }>;
+
 class FoodItemSingleton {
   headers: NutrientItem[] = [
     { label: 'Produkt', property: 'label', type: FieldType.Text, mode: FieldMode.View },
@@ -28,10 +30,56 @@ class FoodItemSingleton {
     { label: 'Metionina (g)', property: 'methionine', type: FieldType.Number },
     { label: 'Tryptofan (g)', property: 'tryptophan', type: FieldType.Number },
     { label: 'Arginina (g)', property: 'arginine', type: FieldType.Number },
+    { label: 'Włókno (g)', property: 'fiber', type: FieldType.Number },
     { label: 'Ca (g)', property: 'calcium', type: FieldType.Number },
     { label: 'P ogólny (g)', property: 'phosphorus', type: FieldType.Number },
     { label: 'Na (g)', property: 'sodium', type: FieldType.Number },
   ];
+
+  limits: any = {
+    [ForageType.Starter]: {
+      energy: {
+        min: 12.1,
+        max: 12.9,
+      },
+      protein: {
+        min: 12.1,
+        max: 12.9,
+      },
+      lysine: {
+        min: 12.1,
+        max: 12.9,
+      },
+      methionine: {
+        min: 12.1,
+        max: 12.9,
+      },
+      tryptophan: {
+        min: 12.1,
+        max: 12.9,
+      },
+      arginine: {
+        min: 0,
+        max: Infinity,
+      },
+      fiber: {
+        min: 0,
+        max: 40,
+      },
+      calcium: {
+        min: 0,
+        max: 10,
+      },
+      phosphorus: {
+        min: 6.5,
+        max: 6.5,
+      },
+      sodium: {
+        min: 0.15,
+        max: 0.15,
+      },
+    },
+  };
 
   products: FoodItemRecord[] = [
     {
