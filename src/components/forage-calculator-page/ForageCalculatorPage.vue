@@ -7,28 +7,31 @@
       @select-change="updateSelected"
       @product-remove="removeProduct"
     ></FoodItemTable>
-    <div>
-      <form v-on:submit.prevent="addNutrient()">
-        <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
-        <div><AddButton /></div>
-      </form>
+    <div style="display: flex;">
+      <div style="width: 10vw;">
+        <form v-on:submit.prevent="addNutrient()">
+          <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
+          <div><AddButton /></div>
+        </form>
+      </div>
+      <div style="margin-left: 10px;">
+        <form class="flex-wrap" v-on:submit.prevent="addIngredient()">
+          <component
+            v-for="field in schema"
+            :key="field.property"
+            :is="field.type"
+            v-model="ingredient[field.property]"
+            v-bind="field"
+          ></component>
+          <div><AddButton /></div>
+        </form>
+      </div>
     </div>
     <div>
-      <form class="flex-wrap" v-on:submit.prevent="addIngredient()">
-        <component
-          v-for="field in schema"
-          :key="field.property"
-          :is="field.type"
-          v-model="ingredient[field.property]"
-          v-bind="field"
-        ></component>
-        <div><AddButton /></div>
-      </form>
-    </div>
-    <div>
+      <button v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</button>
       <button v-on:click="resetToDefaults()">Reset do fabrycznych</button>
     </div>
-    <div class="information-panel">
+    <div class="information-panel flex-wrap">
       <SelectField
         v-model="forageType"
         v-on:change="changeForageRequirements(forageType)"
@@ -36,8 +39,43 @@
         :mode="FieldMode.Edit"
         :options="limitOptions"
       ></SelectField>
-      <h3>Zalecane w 1 kg paszy dla różnych grup produkcyjnych:</h3>
-      <button v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</button>
+      <div>
+        <h3>
+          Zalecane w 1 kg paszy dla grupy produkcyjnej
+          <strong>{{ chosenForage }}</strong>
+          :
+        </h3>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <span>Granica</span>
+              </th>
+              <th v-for="header in limitsTable" v-bind:key="header.property">
+                <span class="header_label">{{ header.label }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span><em>min</em></span>
+              </td>
+              <td v-for="limit in limitsTable" v-bind:key="limit.label">
+                <span>{{ limit.min ?? '-' }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span><em>max</em></span>
+              </td>
+              <td v-for="limit in limitsTable" v-bind:key="limit.label">
+                <span>{{ limit.max ?? '-' }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -52,7 +90,7 @@ import SelectField from '@/components/select-field/SelectField.vue';
 import FoodItemTable from '@/components/food-item-table/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
-import { FieldType, ForageType } from '@/helpers/food-item.service';
+import { FieldType, ForageType, FoodItemService } from '@/helpers/food-item.service';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 
@@ -86,8 +124,6 @@ export default defineComponent({
       cost: 420,
     });
     const nutrient = ref('');
-    // TODO finish other types in the food-item.service
-    // TODO display "limits" for specific forageType
     // TODO add possibility to display amount of g's in kg's in a table (2 columns per nutrient)
     // TODO edit the cells in the table on click
 
@@ -97,9 +133,31 @@ export default defineComponent({
       { value: ForageType.Prester, label: 'Prester' },
       { value: ForageType.Grower, label: 'Grower' },
       { value: ForageType.Finiszer, label: 'Finiszer' },
-      { value: ForageType.Nioska1, label: 'Nioska I' },
-      { value: ForageType.Nioska2, label: 'Nioska II' },
+      { value: ForageType.Nioska, label: 'Nioska' },
     ];
+    const chosenForage = computed(() =>
+      (limitOptions.find(({ value }) => value === forageType.value)?.label ?? '').toLowerCase(),
+    );
+    const limitsTable = computed(() => {
+      const limits = FoodItemService.limits[forageType.value] ?? {};
+      // TODO this should only take into account the macros, not every single header
+      return (
+        schema?.value?.reduce((acc: any[], header: any): any[] => {
+          if (!limits[header?.property]) {
+            return acc;
+          }
+
+          return [
+            ...acc,
+            {
+              max: limits[header.property]?.max,
+              min: limits[header.property]?.min,
+              label: header.label,
+            },
+          ];
+        }, []) ?? []
+      );
+    });
 
     return {
       limitOptions,
@@ -111,44 +169,46 @@ export default defineComponent({
       forageType,
       FieldMode,
       ForageType,
+      chosenForage,
+      limitsTable,
       async calculateMinimalCostMix() {
-        console.log('this will provide some output for the LP problem');
         // TODO pass the data properly (mapped from the chosen products)
         try {
+          const variables = products.value.reduce((acc: any, curr): any => {
+            const property = ((curr.label ?? '') as string)
+              .toLowerCase()
+              .split(' ')
+              .join('_') as string;
+            acc[property] = curr;
+            return acc;
+          }, {});
+          const constraints = {
+            ...FoodItemService.limits[forageType.value],
+          };
+          console.info(constraints, variables);
           const suggestedMix = await axios.post('http://localhost:3000/api/calculate-feed-mix', {
             optimize: 'cost',
             opType: 'min',
-            constraints: {
-              plane: {
-                max: 44,
-              },
-              person: {
-                max: 512,
-              },
-            },
-            variables: {
-              brit: {
-                capacity: 20000,
-                plane: 1,
-                person: 8,
-                cost: 5000,
-              },
-              yank: {
-                capacity: 30000,
-                plane: 1,
-                person: 16,
-                cost: 9000,
-              },
+            constraints,
+            variables,
+            options: {
+              // TODO make tolerance configurable from FE
+              tolerance: 0.05,
             },
           });
+          // TODO display those values in the table (percentage) IF the result is feasible
           console.info('got some mix!', suggestedMix);
+          if (suggestedMix.data.feasible) {
+            console.info('and it succeeded!');
+          } else {
+            console.info('but it failed  :(');
+          }
         } catch (e) {
           // TODO handle error - display one (library - vee-validate)
         }
       },
       changeForageRequirements(type: ForageType) {
-        // TODO display different forage requirements for different forage type
-        console.log('registered select field change', type);
+        console.log('registered select field change', type, forageType.value, forageType);
       },
       resetToDefaults() {
         const { products: defaultProducts, headers: defaultHeaders } = getDefaultState();
