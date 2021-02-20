@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>Kalkulator receptur mieszanek dla drobiu</h1>
+  <el-container>
+    <el-header><h1>Kalkulator receptur mieszanek dla drobiu</h1></el-header>
     <FoodItemTable
       v-bind:products="products"
       v-bind:headers="headers"
@@ -11,7 +11,7 @@
       <div style="width: 10vw;">
         <form v-on:submit.prevent="addNutrient()">
           <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
-          <div><AddButton /></div>
+          <div><AddButton :type="'primary'" /></div>
         </form>
       </div>
       <div style="margin-left: 10px;">
@@ -23,13 +23,13 @@
             v-model="ingredient[field.property]"
             v-bind="field"
           ></component>
-          <div><AddButton /></div>
+          <div><AddButton :type="'primary'" /></div>
         </form>
       </div>
     </div>
     <div>
-      <button v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</button>
-      <button v-on:click="resetToDefaults()">Reset do fabrycznych</button>
+      <el-button type="success" v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</el-button>
+      <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
     <div class="information-panel flex-wrap">
       <SelectField
@@ -45,39 +45,18 @@
           <strong>{{ chosenForage }}</strong>
           :
         </h3>
-        <table>
-          <thead>
-            <tr>
-              <th>
-                <span>Granica</span>
-              </th>
-              <th v-for="header in limitsTable" v-bind:key="header.property">
-                <span class="header_label">{{ header.label }}</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span><em>min</em></span>
-              </td>
-              <td v-for="limit in limitsTable" v-bind:key="limit.label">
-                <span>{{ limit.min ?? '-' }}</span>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <span><em>max</em></span>
-              </td>
-              <td v-for="limit in limitsTable" v-bind:key="limit.label">
-                <span>{{ limit.max ?? '-' }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <el-table border :data="limitsData">
+          <el-table-column
+            v-for="limitHeader in limitsHeaders"
+            v-bind:key="limitHeader.property"
+            :prop="limitHeader.property"
+            :label="limitHeader.label"
+          >
+          </el-table-column>
+        </el-table>
       </div>
     </div>
-  </div>
+  </el-container>
 </template>
 
 <script lang="ts">
@@ -138,29 +117,55 @@ export default defineComponent({
     const chosenForage = computed(() =>
       (limitOptions.find(({ value }) => value === forageType.value)?.label ?? '').toLowerCase(),
     );
-    const limitsTable = computed(() => {
+    const limitsData = computed(() => {
       const limits = FoodItemService.limits[forageType.value] ?? {};
       // TODO this should only take into account the macros, not every single header
-      return (
-        schema?.value?.reduce((acc: any[], header: any): any[] => {
-          if (!limits[header?.property]) {
+      return [
+        {
+          limit: 'min',
+          ...Object.keys(limits).reduce((acc: any, curr) => {
+            acc[curr] = limits[curr].min ?? '-';
             return acc;
-          }
+          }, {}),
+        },
+        {
+          limit: 'max',
+          ...Object.keys(limits).reduce((acc: any, curr) => {
+            acc[curr] = limits[curr].max ?? '-';
+            return acc;
+          }, {}),
+        },
+      ];
+    });
+    const limitsHeaders = computed(() => {
+      const limits = FoodItemService.limits[forageType.value] ?? {};
+      // TODO this should only take into account the macros, not every single header
+      const firstColumn = {
+        property: 'limit',
+        label: '',
+      };
+      return (
+        schema?.value?.reduce(
+          (acc: any[], header: any): any[] => {
+            if (!limits[header?.property]) {
+              return acc;
+            }
 
-          return [
-            ...acc,
-            {
-              max: limits[header.property]?.max,
-              min: limits[header.property]?.min,
-              label: header.label,
-            },
-          ];
-        }, []) ?? []
+            return [
+              ...acc,
+              {
+                property: header.property,
+                label: header.label,
+              },
+            ];
+          },
+          [firstColumn],
+        ) ?? []
       );
     });
+    const tolerance = ref(0.15);
 
     return {
-      limitOptions,
       schema,
       headers,
       products,
@@ -170,7 +175,10 @@ export default defineComponent({
       FieldMode,
       ForageType,
       chosenForage,
-      limitsTable,
+      limitsData,
+      limitOptions,
+      limitsHeaders,
+      tolerance,
       async calculateMinimalCostMix() {
         // TODO pass the data properly (mapped from the chosen products)
         try {
@@ -193,7 +201,7 @@ export default defineComponent({
             variables,
             options: {
               // TODO make tolerance configurable from FE
-              tolerance: 0.05,
+              tolerance: tolerance.value,
             },
           });
           // TODO display those values in the table (percentage) IF the result is feasible

@@ -1,13 +1,13 @@
 <template>
-  <button>
+  <el-button :type="type">
     <span>Dodaj</span>
-  </button>
+  </el-button>
 </template>
 
 <script>
 export default {
   name: 'add-button',
-  props: [],
+  props: ['type'],
 };
 </script>
 
