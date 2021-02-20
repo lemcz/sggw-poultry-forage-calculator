@@ -38,4 +38,18 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
+
+label {
+  font-size: 16px;
+  color: #606266;
+  margin-right: auto;
+}
+
+input {
+  border: 1px solid #dcdfe6;
+}
+
+input:focus {
+  border-color: #409eff;
+}
 </style>
