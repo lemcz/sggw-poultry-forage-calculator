@@ -1,33 +1,38 @@
 <template>
   <el-container>
     <el-header><h1>Kalkulator receptur mieszanek dla drobiu</h1></el-header>
-    <FoodItemTable
-      v-bind:products="products"
-      v-bind:headers="headers"
-      @select-change="updateSelected"
-      @product-remove="removeProduct"
-    ></FoodItemTable>
-    <div style="display: flex;">
-      <div style="width: 10vw;">
+    <div style="margin: 15px;">
+      <FoodItemTable
+        v-bind:products="products"
+        v-bind:headers="headers"
+        @select-change="updateSelected"
+        @product-remove="removeProduct"
+      ></FoodItemTable>
+    </div>
+    <div style="display: flex; margin: 15px;">
+      <div style="width: 180px;">
         <form v-on:submit.prevent="addNutrient()">
           <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
-          <div><AddButton :type="'primary'" /></div>
+          <div style="margin: 5px"><AddButton :type="'primary'" /></div>
         </form>
       </div>
       <div style="margin-left: 10px;">
         <form class="flex-wrap" v-on:submit.prevent="addIngredient()">
-          <component
-            v-for="field in schema"
-            :key="field.property"
-            :is="field.type"
-            v-model="ingredient[field.property]"
-            v-bind="field"
-          ></component>
-          <div><AddButton :type="'primary'" /></div>
+          <div class="flex-wrap">
+            <component
+              style="margin-left: 5px"
+              v-for="field in schema"
+              :key="field.property"
+              :is="field.type"
+              v-model="ingredient[field.property]"
+              v-bind="field"
+            ></component>
+          </div>
+          <div style="margin: 5px"><AddButton :type="'primary'" /></div>
         </form>
       </div>
     </div>
-    <div style="display: flex;">
+    <div style="display: flex; margin: 15px;">
       <NumberField
         style="width: 180px;"
         :label="'Tolerancja błędu wyniku'"
@@ -36,11 +41,14 @@
         :max="1"
         :step="0.01"
       ></NumberField>
-      <el-button type="success" v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</el-button>
+      <el-button style="margin-left: 10px" type="success" v-on:click="calculateMinimalCostMix()">
+        Wyznacz automatycznie
+      </el-button>
       <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
-    <div class="information-panel flex-wrap">
+    <div style="display: flex; flex-direction: column; margin: 15px;">
       <SelectField
+        style="width: 180px;"
         v-model="forageType"
         v-on:change="changeForageRequirements(forageType)"
         :label="'Typ paszy'"
@@ -74,7 +82,7 @@ import TextField from '@/components/text-field/TextField.vue';
 import AddButton from '@/components/add-button/AddButton.vue';
 import NumberField from '@/components/number-field/NumberField.vue';
 import SelectField from '@/components/select-field/SelectField.vue';
-import FoodItemTable from '@/components/food-item-table/FoodItemTable.vue';
+import FoodItemTable, { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
 import { FieldType, ForageType, FoodItemService } from '@/helpers/food-item.service';
@@ -96,13 +104,15 @@ export default defineComponent({
     const products = ref(defaultProducts);
 
     const schema = computed(() =>
-      headers.value.map((header) => ({
-        type: getHeaderType(header.type),
-        mode: FieldMode.Edit,
-        property: header.property,
-        label: header.label,
-        placeholder: header.label,
-      })),
+      headers.value.map(
+        (header): FoodItemModel => ({
+          type: getHeaderType(header.type),
+          mode: FieldMode.Edit,
+          property: header.property,
+          label: header.label,
+          placeholder: header.label,
+        }),
+      ),
     );
 
     const ingredient = ref({
@@ -127,18 +137,18 @@ export default defineComponent({
     );
     const limitsData = computed(() => {
       const limits = FoodItemService.limits[forageType.value] ?? {};
-      // TODO this should only take into account the macros, not every single header
+      // TODO this should only t`ake into account the macros, not every single header
       return [
         {
           limit: 'min',
-          ...Object.keys(limits).reduce((acc: any, curr) => {
+          ...Object.keys(limits).reduce((acc: { [key: string]: number | string }, curr) => {
             acc[curr] = limits[curr].min ?? '-';
             return acc;
           }, {}),
         },
         {
           limit: 'max',
-          ...Object.keys(limits).reduce((acc: any, curr) => {
+          ...Object.keys(limits).reduce((acc: { [key: string]: number | string }, curr) => {
             acc[curr] = limits[curr].max ?? '-';
             return acc;
           }, {}),
@@ -154,7 +164,10 @@ export default defineComponent({
       };
       return (
         schema?.value?.reduce(
-          (acc: any[], header: any): any[] => {
+          (
+            acc: { property: string; label: string }[],
+            header: FoodItemModel,
+          ): { property: string; label: string }[] => {
             if (!limits[header?.property]) {
               return acc;
             }
@@ -190,7 +203,9 @@ export default defineComponent({
       async calculateMinimalCostMix() {
         // TODO pass the data properly (mapped from the chosen products)
         try {
-          const variables = products.value.reduce((acc: any, curr): any => {
+          const variables = products.value.reduce((acc: { [key: string]: FoodItemRecord }, curr: FoodItemRecord): {
+            [key: string]: FoodItemRecord;
+          } => {
             const property = ((curr.label ?? '') as string)
               .toLowerCase()
               .split(' ')
@@ -291,5 +306,6 @@ a {
 .flex-wrap {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 }
 </style>

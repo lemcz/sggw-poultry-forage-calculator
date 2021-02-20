@@ -47,6 +47,16 @@
 import { computed, defineComponent, ref, Ref } from 'vue';
 import { FoodItem, FoodItemRecord } from '@/models/foodItem.model';
 import { calculateSums } from '@/helpers/collection-helpers';
+import { TFieldType } from '@/helpers/food-item-table';
+import { FieldMode } from '@/models/fieldMode';
+
+export interface FoodItemModel {
+  type: TFieldType;
+  mode: FieldMode;
+  property: string;
+  label: string;
+  placeholder: string;
+}
 
 // TODO add select/deselect all rows
 // NOTE selection also probably can be done better, but there's no time for that

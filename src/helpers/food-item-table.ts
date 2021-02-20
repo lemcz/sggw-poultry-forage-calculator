@@ -1,7 +1,9 @@
 import { FieldType, FoodItemService } from '@/helpers/food-item.service';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 
-export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | 'SelectField' | '' {
+export type TFieldType = 'TextField' | 'NumberField' | 'SelectField' | '';
+
+export function getHeaderType(type?: FieldType): TFieldType {
   switch (type) {
     case FieldType.Text:
       return 'TextField';
@@ -13,6 +15,7 @@ export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | '
   return '';
 }
 
+// TODO fix the product type to make it work properly
 export function fillProductWithDefaults(product: any, headers: NutrientItem[]): FoodItemRecord {
   return {
     ...product,

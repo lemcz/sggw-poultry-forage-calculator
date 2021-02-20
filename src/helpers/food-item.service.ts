@@ -587,11 +587,11 @@ class FoodItemSingleton {
     },
   ];
 
-  getProducts() {
+  getProducts(): FoodItemRecord[] {
     return this.products;
   }
 
-  getHeaders() {
+  getHeaders(): NutrientItem[] {
     return this.headers;
   }
 }
