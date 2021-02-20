@@ -36,7 +36,7 @@
       <tr>
         <td><strong>W 1 kg mieszanki jest: </strong></td>
         <td v-for="(sum, index) in sums" v-bind:key="index">
-          {{ sum !== undefined ? sum : '-' }}
+          {{ sum !== undefined ? parseFloat(sum.toFixed(2)) : '-' }}
         </td>
       </tr>
     </tfoot>
