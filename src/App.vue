@@ -1,15 +1,15 @@
 <template>
-  <ForageCalculator />
+  <ForageCalculatorPage />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import ForageCalculator from './components/ForageCalculator.vue';
+import ForageCalculatorPage from '@/components/forage-calculator-page/ForageCalculatorPage.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
-    ForageCalculator,
+    ForageCalculatorPage,
   },
 });
 </script>
