@@ -10,6 +10,7 @@
       :value="modelValue"
       :id="property"
       :name="property"
+      :min="0"
       :placeholder="placeholder"
     />
     <span v-if="mode === Mode.View">
