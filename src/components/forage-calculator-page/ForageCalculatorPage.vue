@@ -27,7 +27,15 @@
         </form>
       </div>
     </div>
-    <div>
+    <div style="display: flex;">
+      <NumberField
+        style="width: 180px;"
+        :label="'Tolerancja błędu wyniku'"
+        v-model="tolerance"
+        :mode="FieldMode.Edit"
+        :max="1"
+        :step="0.01"
+      ></NumberField>
       <el-button type="success" v-on:click="calculateMinimalCostMix()">Wyznacz automatycznie</el-button>
       <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
@@ -163,7 +171,7 @@ export default defineComponent({
         ) ?? []
       );
     });
-    const tolerance = ref(0.15);
+    const tolerance = ref(0.01);
 
     return {
       schema,
