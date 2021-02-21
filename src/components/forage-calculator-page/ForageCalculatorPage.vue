@@ -3,8 +3,8 @@
     <el-header><h1>Kalkulator receptur mieszanek dla drobiu</h1></el-header>
     <div style="margin: 15px;">
       <FoodItemTable
-        v-bind:products="products"
-        v-bind:headers="headers"
+        v-bind:model="products"
+        v-bind:config="headers"
         @select-change="updateSelected"
         @product-remove="removeProduct"
       ></FoodItemTable>
