@@ -33,6 +33,14 @@
       </div>
     </div>
     <div style="display: flex; margin: 15px;">
+      <SelectField
+        style="width: 180px;"
+        v-model="forageType"
+        v-on:change="changeForageRequirements(forageType)"
+        :label="'Typ paszy'"
+        :mode="FieldMode.Edit"
+        :options="limitOptions"
+      ></SelectField>
       <NumberField
         style="width: 180px;"
         :label="'Tolerancja błędu wyniku'"
@@ -47,14 +55,6 @@
       <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
     <div style="display: flex; flex-direction: column; margin: 15px;">
-      <SelectField
-        style="width: 180px;"
-        v-model="forageType"
-        v-on:change="changeForageRequirements(forageType)"
-        :label="'Typ paszy'"
-        :mode="FieldMode.Edit"
-        :options="limitOptions"
-      ></SelectField>
       <div>
         <h3>
           Zalecane w 1 kg paszy dla grupy produkcyjnej
@@ -76,7 +76,6 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { computed, defineComponent, ref } from 'vue';
 import TextField from '@/components/text-field/TextField.vue';
@@ -87,8 +86,9 @@ import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
 import FoodItemTable, { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
-import { FieldType, ForageType, FoodItemService } from '@/helpers/food-item.service';
+import { FieldType, FoodItemService, ForageType, getLimitsData, getLimitsHeaders } from '@/helpers/food-item.service';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
+import { calculateFeedMix } from '@/helpers/calculate-feed-mix-api';
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -137,53 +137,14 @@ export default defineComponent({
       (limitOptions.find(({ value }) => value === forageType.value)?.label ?? '').toLowerCase(),
     );
     const limitsData = computed(() => {
+      // TODO this should only take into account current "macros"/"headers", not the hardcoded limits
       const limits = FoodItemService.limits[forageType.value] ?? {};
-      // TODO this should only take into account the macros, not every single header
-      return [
-        {
-          limit: 'min',
-          ...Object.keys(limits).reduce((acc: { [key: string]: number | string }, curr) => {
-            acc[curr] = limits[curr].min ?? '-';
-            return acc;
-          }, {}),
-        },
-        {
-          limit: 'max',
-          ...Object.keys(limits).reduce((acc: { [key: string]: number | string }, curr) => {
-            acc[curr] = limits[curr].max ?? '-';
-            return acc;
-          }, {}),
-        },
-      ];
+      return [getLimitsData(limits, 'min'), getLimitsData(limits, 'max')];
     });
     const limitsHeaders = computed(() => {
+      // TODO this should only take into account current "macros"/"headers", not the hardcoded limits
       const limits = FoodItemService.limits[forageType.value] ?? {};
-      // TODO this should only take into account the macros, not every single header
-      const firstColumn = {
-        property: 'limit',
-        label: '',
-      };
-      return (
-        schema?.value?.reduce(
-          (
-            acc: { property: string; label: string }[],
-            header: FoodItemModel,
-          ): { property: string; label: string }[] => {
-            if (!limits[header?.property]) {
-              return acc;
-            }
-
-            return [
-              ...acc,
-              {
-                property: header.property,
-                label: header.label,
-              },
-            ];
-          },
-          [firstColumn],
-        ) ?? []
-      );
+      return getLimitsHeaders(limits, schema?.value);
     });
     let selectedProducts: FoodItemRecord[] = [];
     const tolerance = ref(0.01);
@@ -203,6 +164,14 @@ export default defineComponent({
       limitsHeaders,
       tolerance,
       async calculateMinimalCostMix() {
+        if (selectedProducts.length === 0) {
+          ElMessage.error({
+            type: 'error',
+            showClose: true,
+            message: 'Należy wybrać produkty do wyliczenia mieszanki',
+          });
+          return;
+        }
         const variables = selectedProducts.reduce((acc: { [key: string]: FoodItemRecord }, curr: FoodItemRecord): {
           [key: string]: FoodItemRecord;
         } => {
@@ -216,16 +185,11 @@ export default defineComponent({
         const constraints = {
           ...FoodItemService.limits[forageType.value],
         };
-        console.info(constraints, variables);
         try {
-          const suggestedMix = await axios.post('http://localhost:3000/api/calculate-feed-mix', {
+          const suggestedMix = await calculateFeedMix(constraints, variables, {
             optimize: 'cost',
             opType: 'min',
-            constraints,
-            variables,
-            options: {
-              tolerance: tolerance.value,
-            },
+            options: { tolerance: tolerance.value },
           });
           // TODO display those values in the table (percentage) IF the result is feasible
           console.info('got some mix!', suggestedMix);
