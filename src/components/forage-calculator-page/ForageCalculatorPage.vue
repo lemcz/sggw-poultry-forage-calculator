@@ -137,7 +137,7 @@ export default defineComponent({
     );
     const limitsData = computed(() => {
       const limits = FoodItemService.limits[forageType.value] ?? {};
-      // TODO this should only t`ake into account the macros, not every single header
+      // TODO this should only take into account the macros, not every single header
       return [
         {
           limit: 'min',
@@ -223,7 +223,6 @@ export default defineComponent({
             constraints,
             variables,
             options: {
-              // TODO make tolerance configurable from FE
               tolerance: tolerance.value,
             },
           });
