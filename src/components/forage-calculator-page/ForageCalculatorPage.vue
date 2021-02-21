@@ -77,16 +77,17 @@
 
 <script lang="ts">
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import { computed, defineComponent, ref } from 'vue';
 import TextField from '@/components/text-field/TextField.vue';
 import AddButton from '@/components/add-button/AddButton.vue';
 import NumberField from '@/components/number-field/NumberField.vue';
 import SelectField from '@/components/select-field/SelectField.vue';
-import FoodItemTable, { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 import { FieldMode } from '@/models/fieldMode';
 import { alreadyExists } from '@/helpers/collection-helpers';
-import { FieldType, ForageType, FoodItemService } from '@/helpers/food-item.service';
+import FoodItemTable, { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
+import { FieldType, ForageType, FoodItemService } from '@/helpers/food-item.service';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 
 export default defineComponent({
@@ -184,6 +185,7 @@ export default defineComponent({
         ) ?? []
       );
     });
+    let selectedProducts: FoodItemRecord[] = [];
     const tolerance = ref(0.01);
 
     return {
@@ -201,22 +203,21 @@ export default defineComponent({
       limitsHeaders,
       tolerance,
       async calculateMinimalCostMix() {
-        // TODO pass the data properly (mapped from the chosen products)
+        const variables = selectedProducts.reduce((acc: { [key: string]: FoodItemRecord }, curr: FoodItemRecord): {
+          [key: string]: FoodItemRecord;
+        } => {
+          const property = ((curr.label ?? '') as string)
+            .toLowerCase()
+            .split(' ')
+            .join('_') as string;
+          acc[property] = curr;
+          return acc;
+        }, {});
+        const constraints = {
+          ...FoodItemService.limits[forageType.value],
+        };
+        console.info(constraints, variables);
         try {
-          const variables = products.value.reduce((acc: { [key: string]: FoodItemRecord }, curr: FoodItemRecord): {
-            [key: string]: FoodItemRecord;
-          } => {
-            const property = ((curr.label ?? '') as string)
-              .toLowerCase()
-              .split(' ')
-              .join('_') as string;
-            acc[property] = curr;
-            return acc;
-          }, {});
-          const constraints = {
-            ...FoodItemService.limits[forageType.value],
-          };
-          console.info(constraints, variables);
           const suggestedMix = await axios.post('http://localhost:3000/api/calculate-feed-mix', {
             optimize: 'cost',
             opType: 'min',
@@ -229,12 +230,24 @@ export default defineComponent({
           // TODO display those values in the table (percentage) IF the result is feasible
           console.info('got some mix!', suggestedMix);
           if (suggestedMix.data.feasible) {
-            console.info('and it succeeded!');
+            ElMessage.success({
+              type: 'success',
+              showClose: true,
+              message: 'Pomyślnie wyznaczono składniki',
+            });
           } else {
-            console.info('but it failed  :(');
+            ElMessage.error({
+              type: 'error',
+              showClose: true,
+              message: 'Nie udało się znaleźć rozwiązania dla wybranych składników',
+            });
           }
         } catch (e) {
-          // TODO handle error - display one (library - vee-validate)
+          ElMessage.error({
+            type: 'error',
+            showClose: true,
+            message: 'Błąd połączenia z serwerem. Proszę spróbować ponownie później.',
+          });
         }
       },
       changeForageRequirements(type: ForageType) {
@@ -246,8 +259,7 @@ export default defineComponent({
         headers.value = defaultHeaders;
       },
       updateSelected(products: FoodItemRecord[]): void {
-        // TODO finish this (calculate optimal Forage with selected items)
-        console.log('update selected!', products);
+        selectedProducts = products;
       },
       removeProduct(product: FoodItemRecord): void {
         products.value = products.value.filter(({ label }) => label !== product.label);
