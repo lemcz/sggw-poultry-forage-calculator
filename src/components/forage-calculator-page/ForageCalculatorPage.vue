@@ -42,7 +42,7 @@
         :options="limitOptions"
       ></SelectField>
       <NumberField
-        style="width: 180px;"
+        style="width: 180px; margin-left: 10px;"
         :label="'Tolerancja błędu wyniku'"
         v-model="tolerance"
         :mode="FieldMode.Edit"
@@ -89,6 +89,7 @@ import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { FieldType, FoodItemService, ForageType, getLimitsData, getLimitsHeaders } from '@/helpers/food-item.service';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 import { calculateFeedMix } from '@/helpers/calculate-feed-mix-api';
+import { getSuggestedPercentage } from '@/helpers/utils';
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -100,9 +101,10 @@ export default defineComponent({
     AddButton,
   },
   setup() {
-    const { headers: defaultHeaders, products: defaultProducts } = getDefaultState();
+    const { headers: defaultHeaders, products: defaultProducts, tolerance: defaultTolerance } = getDefaultState();
     const headers = ref(defaultHeaders);
     const products = ref(defaultProducts);
+    const tolerance = ref(defaultTolerance);
 
     const schema = computed(() =>
       headers.value.map(
@@ -147,7 +149,6 @@ export default defineComponent({
       return getLimitsHeaders(limits, schema?.value);
     });
     let selectedProducts: FoodItemRecord[] = [];
-    const tolerance = ref(0.01);
 
     return {
       schema,
@@ -175,11 +176,7 @@ export default defineComponent({
         const variables = selectedProducts.reduce((acc: { [key: string]: FoodItemRecord }, curr: FoodItemRecord): {
           [key: string]: FoodItemRecord;
         } => {
-          const property = ((curr.label ?? '') as string)
-            .toLowerCase()
-            .split(' ')
-            .join('_') as string;
-          acc[property] = curr;
+          acc[curr.property ?? ''] = curr;
           return acc;
         }, {});
         const constraints = {
@@ -191,13 +188,18 @@ export default defineComponent({
             opType: 'min',
             options: { tolerance: tolerance.value },
           });
-          // TODO display those values in the table (percentage) IF the result is feasible
           console.info('got some mix!', suggestedMix);
-          if (suggestedMix.data.feasible) {
+          if (suggestedMix.feasible) {
             ElMessage.success({
               type: 'success',
               showClose: true,
               message: 'Pomyślnie wyznaczono składniki',
+            });
+            products.value.forEach((product) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { feasible, bounded, result, ...rest } = suggestedMix;
+
+              product.percentage = getSuggestedPercentage(rest, product);
             });
           } else {
             ElMessage.error({
@@ -219,7 +221,7 @@ export default defineComponent({
       },
       resetToDefaults() {
         const { products: defaultProducts, headers: defaultHeaders } = getDefaultState();
-        products.value = defaultProducts;
+        products.value = defaultProducts as any;
         headers.value = defaultHeaders;
       },
       updateSelected(products: FoodItemRecord[]): void {
@@ -246,11 +248,11 @@ export default defineComponent({
         nutrient.value = '';
       },
       addIngredient() {
-        if (!ingredient.value.label || alreadyExists(products.value, ingredient.value)) {
+        if (!ingredient.value.label || alreadyExists(products.value, ingredient.value as any)) {
           return;
         }
 
-        products.value = [...products.value, fillProductWithDefaults(ingredient.value, headers.value)];
+        products.value = [...products.value, fillProductWithDefaults(ingredient.value, headers.value)] as any;
         ingredient.value = {
           label: '',
           percentage: 0,

@@ -535,7 +535,7 @@ class FoodItemSingleton {
     {
       label: 'Metionina (50%)',
       percentage: 0,
-      cost: 13,
+      cost: 18,
       dryWeight: 900,
       energy: 12.2,
       protein: 0,
