@@ -1,5 +1,12 @@
 <template>
-  <el-table sum-text="Suma" max-height="740" :data="model" @selection-change="toggleRowSelection" show-summary>
+  <el-table
+    sum-text="Suma"
+    max-height="740"
+    :data="model"
+    @selection-change="toggleRowSelection"
+    show-summary
+    :summary-method="getSummaries"
+  >
     <el-table-column type="selection"></el-table-column>
     <el-table-column
       v-for="header in config.singularColumns"
@@ -24,7 +31,7 @@
     </el-table-column>
     <el-table-column v-for="header in config.doubleColumns" v-bind:key="header.property" :label="header.label">
       <el-table-column label="/ 1kg" :prop="header.property"></el-table-column>
-      <el-table-column label="w mieszance">
+      <el-table-column label="w mieszance" :prop="header.property">
         <template #default="scope">
           <span style="margin-left: 10px">{{ getMixValueCell(scope.row, header) }}</span>
         </template>
@@ -49,6 +56,7 @@ import { FoodItemRecord } from '@/models/foodItem.model';
 import { TFieldType } from '@/helpers/food-item-table';
 import { FieldMode } from '@/models/fieldMode';
 import NumberField from '@/components/number-field/NumberField.vue';
+import { formatNumberToDisplay, sumNumeric } from '@/helpers/utils';
 
 export interface FoodItemModel {
   type: TFieldType;
@@ -58,6 +66,7 @@ export interface FoodItemModel {
   placeholder: string;
 }
 
+// TODO edit values in specific row when we click on an edit button
 export default defineComponent({
   name: 'FoodItemTable',
   props: {
@@ -69,6 +78,10 @@ export default defineComponent({
   },
   emits: ['select-change', 'product-remove'],
   setup(props, { emit }) {
+    const getMixValue = (product: any, header: any): number => {
+      return formatNumberToDisplay(((product.percentage as number) * product[header.property]) / 100);
+    };
+
     return {
       handleDelete($index: number, row: FoodItemRecord): void {
         emit('product-remove', row);
@@ -77,7 +90,24 @@ export default defineComponent({
         emit('select-change', selectedItems);
       },
       getMixValueCell(product: any, header: any): number {
-        return parseFloat((((product.percentage as number) * product[header.property]) / 100).toFixed(2));
+        return getMixValue(product, header);
+      },
+      getSummaries({ columns, data }: any): (string | number)[] {
+        return columns.map((column: any, idx: number): string | number => {
+          if (idx === 0) return '';
+          if (idx === 1) return 'Suma';
+          // NOTE these are the columns which represent values / 1kg
+          if (column.no === 0) return '';
+
+          const values = data.map((item: any): number =>
+            column.property === 'percentage' ? Number(item[column.property]) : getMixValue(item, column),
+          );
+          if (!values.every((value: any) => isNaN(value))) {
+            return formatNumberToDisplay(sumNumeric(values));
+          }
+
+          return '';
+        });
       },
       FieldMode,
     };

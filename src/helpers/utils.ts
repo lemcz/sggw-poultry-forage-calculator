@@ -15,11 +15,15 @@ export function extendFoodItemByProperty(item: FoodItemRecord): FoodItemRecord &
   };
 }
 
+export function sumNumeric(values: number[]): number {
+  return values.reduce((prev: number, curr: any): number => {
+    const value = Number(curr);
+    return isNaN(value) ? prev : prev + curr;
+  }, 0);
+}
+
 export function getSuggestedPercentage(suggestedValues: { [key: string]: number }, item: any): number {
-  const totalIngredientsAmount = Object.values(suggestedValues).reduce(
-    (acc: number, curr: number): number => acc + curr,
-    0,
-  );
+  const totalIngredientsAmount = sumNumeric(Object.values(suggestedValues));
 
   const suggestedValue = suggestedValues?.[item?.property];
   if (suggestedValue) {
@@ -27,4 +31,8 @@ export function getSuggestedPercentage(suggestedValues: { [key: string]: number 
     return parseFloat(((suggestedValue * 100) / totalIngredientsAmount).toFixed(PRECISION));
   }
   return 0;
+}
+
+export function formatNumberToDisplay(value: number): number {
+  return parseFloat(value.toFixed(2));
 }
