@@ -23,7 +23,8 @@ export function getSuggestedPercentage(suggestedValues: { [key: string]: number 
 
   const suggestedValue = suggestedValues?.[item?.property];
   if (suggestedValue) {
-    return (suggestedValue * 100) / totalIngredientsAmount;
+    const PRECISION = 8;
+    return parseFloat(((suggestedValue * 100) / totalIngredientsAmount).toFixed(PRECISION));
   }
   return 0;
 }
