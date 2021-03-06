@@ -1,5 +1,4 @@
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
-import { FieldMode } from '@/models/fieldMode';
 import { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 
 export enum FieldType {
@@ -67,7 +66,7 @@ export type ForageTypeLimits = {
 class FoodItemSingleton {
   // TODO find a common object for property name and display label - headers & limits
   headers: NutrientItem[] = [
-    { label: 'Produkt', property: 'label', type: FieldType.Text, mode: FieldMode.View },
+    { label: 'Produkt', property: 'label', type: FieldType.Text },
     { label: '%', property: 'percentage', type: FieldType.Number },
     { label: 'Cena', property: 'cost', type: FieldType.Number },
     { label: 'Sucha masa', property: 'dryWeight', type: FieldType.Number },

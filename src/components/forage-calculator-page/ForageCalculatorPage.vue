@@ -4,7 +4,10 @@
     <div style="margin: 15px;">
       <FoodItemTable
         v-bind:model="products"
-        v-bind:config="headers"
+        v-bind:config="{
+          singularColumns,
+          doubleColumns
+        }"
         @select-change="updateSelected"
         @product-remove="removeProduct"
       ></FoodItemTable>
@@ -149,12 +152,17 @@ export default defineComponent({
       return getLimitsHeaders(limits, schema?.value);
     });
     let selectedProducts: FoodItemRecord[] = [];
+    // TODO Fix this up
+    const singularColumns = headers.value.slice(0, 2);
+    const doubleColumns = headers.value.slice(2);
 
     return {
       schema,
       headers,
       products,
       nutrient,
+      singularColumns,
+      doubleColumns,
       ingredient,
       forageType,
       FieldMode,
