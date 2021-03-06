@@ -58,7 +58,7 @@ export function getLimitsHeaders(
 }
 
 export type NutrientItemProperty = string;
-// TODO find a way to say, that Record implements some keys of a ForageType
+// TODO find a way to reflect that Record implements some keys of a ForageType
 export type ForageTypeLimits = {
   [P in ForageType]?: Record<NutrientItemProperty, { min?: number; max?: number }>;
 };

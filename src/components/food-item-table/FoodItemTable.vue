@@ -7,20 +7,31 @@
       :label="header.label"
       :prop="header.property"
     >
+      <template #default="scope">
+        <span v-if="header.property !== 'percentage'">
+          {{ scope.row[header.property] }}
+        </span>
+        <component
+          v-if="header.property === 'percentage'"
+          :key="header.property"
+          :is="'NumberField'"
+          :mode="FieldMode.Edit"
+          v-model="scope.row[header.property]"
+          :min="0"
+          :max="100"
+        ></component>
+      </template>
     </el-table-column>
     <el-table-column v-for="header in config.doubleColumns" v-bind:key="header.property" :label="header.label">
       <el-table-column label="/ 1kg" :prop="header.property"></el-table-column>
       <el-table-column label="w mieszance">
         <template #default="scope">
-          <span style="margin-left: 10px">{{
-            parseFloat(((scope.row.percentage * scope.row[header.property]) / 100).toFixed(2))
-          }}</span>
+          <span style="margin-left: 10px">{{ getMixValueCell(scope.row, header) }}</span>
         </template>
       </el-table-column>
     </el-table-column>
     <el-table-column label="Akcje">
       <template #default="scope">
-        <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" icon="el-icon-edit"></el-button>
         <el-button
           size="mini"
           type="danger"
@@ -37,6 +48,7 @@ import { defineComponent } from 'vue';
 import { FoodItemRecord } from '@/models/foodItem.model';
 import { TFieldType } from '@/helpers/food-item-table';
 import { FieldMode } from '@/models/fieldMode';
+import NumberField from '@/components/number-field/NumberField.vue';
 
 export interface FoodItemModel {
   type: TFieldType;
@@ -52,18 +64,22 @@ export default defineComponent({
     model: Array as () => FoodItemRecord[],
     config: Object as () => { singularColumns: any[]; doubleColumns: any[] },
   },
+  components: {
+    NumberField,
+  },
   emits: ['select-change', 'product-remove'],
   setup(props, { emit }) {
     return {
-      handleEdit($index: number, row: FoodItemRecord): void {
-        console.info('implement me!', $index, row);
-      },
       handleDelete($index: number, row: FoodItemRecord): void {
         emit('product-remove', row);
       },
       toggleRowSelection(selectedItems: FoodItemRecord[]): void {
         emit('select-change', selectedItems);
       },
+      getMixValueCell(product: any, header: any): number {
+        return parseFloat((((product.percentage as number) * product[header.property]) / 100).toFixed(2));
+      },
+      FieldMode,
     };
   },
 });
