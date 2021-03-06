@@ -1,5 +1,6 @@
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { FieldMode } from '@/models/fieldMode';
+import { FoodItemModel } from '@/components/food-item-table/FoodItemTable.vue';
 
 export enum FieldType {
   Text = 'text',
@@ -13,6 +14,48 @@ export enum ForageType {
   Grower = 'grower',
   Finiszer = 'finiszer',
   Nioska = 'nioska',
+}
+
+export function getLimitsData(limits: ForageTypeLimits, type: 'min' | 'max') {
+  return {
+    limit: type,
+    ...Object.keys(limits).reduce((acc: { [key: string]: number | string }, curr) => {
+      acc[curr] = (limits as any)[curr][type] ?? '-';
+      return acc;
+    }, {}),
+  };
+}
+
+export function getLimitsHeaders(
+  limits: ForageTypeLimits,
+  collection: any[] = [],
+): { property: string; label: string }[] {
+  const firstColumn = {
+    property: 'limit',
+    label: '',
+  };
+
+  return (
+    collection.reduce(
+      (
+        acc: { property: string; label: string }[],
+        { property, label }: FoodItemModel,
+      ): { property: string; label: string }[] => {
+        if (!(limits as any)[property]) {
+          return acc;
+        }
+
+        return [
+          ...acc,
+          {
+            property,
+            label,
+          },
+        ];
+      },
+      [firstColumn],
+    ) ?? []
+  );
 }
 
 export type NutrientItemProperty = string;
@@ -492,7 +535,7 @@ class FoodItemSingleton {
     {
       label: 'Metionina (50%)',
       percentage: 0,
-      cost: 13,
+      cost: 18,
       dryWeight: 900,
       energy: 12.2,
       protein: 0,
@@ -587,11 +630,11 @@ class FoodItemSingleton {
     },
   ];
 
-  getProducts() {
+  getProducts(): FoodItemRecord[] {
     return this.products;
   }
 
-  getHeaders() {
+  getHeaders(): NutrientItem[] {
     return this.headers;
   }
 }

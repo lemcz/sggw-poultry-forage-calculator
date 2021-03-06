@@ -1,5 +1,5 @@
 <template>
-  <el-button :type="type">
+  <el-button :type="type" :native-type="'submit'">
     <span>Dodaj</span>
   </el-button>
 </template>

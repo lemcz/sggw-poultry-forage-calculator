@@ -1,7 +1,10 @@
 import { FieldType, FoodItemService } from '@/helpers/food-item.service';
 import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
+import { extendFoodItemByProperty } from '@/helpers/utils';
 
-export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | 'SelectField' | '' {
+export type TFieldType = 'TextField' | 'NumberField' | 'SelectField' | '';
+
+export function getHeaderType(type?: FieldType): TFieldType {
   switch (type) {
     case FieldType.Text:
       return 'TextField';
@@ -13,6 +16,7 @@ export function getHeaderType(type?: FieldType): 'TextField' | 'NumberField' | '
   return '';
 }
 
+// TODO fix the product type to make it work properly
 export function fillProductWithDefaults(product: any, headers: NutrientItem[]): FoodItemRecord {
   return {
     ...product,
@@ -20,14 +24,14 @@ export function fillProductWithDefaults(product: any, headers: NutrientItem[]): 
   };
 }
 
-export function getDefaultState(): { headers: NutrientItem[]; products: FoodItemRecord[] } {
+export function getDefaultState(): { headers: NutrientItem[]; products: FoodItemRecord[]; tolerance: number } {
   const headers = FoodItemService.getHeaders();
-  const products = FoodItemService.getProducts().map((product: FoodItemRecord) =>
-    fillProductWithDefaults(product, headers),
-  );
+  const products = FoodItemService.getProducts().map((product) => extendFoodItemByProperty(product));
+  const DEFAULT_TOLERANCE = 0.01;
 
   return {
     headers,
     products,
+    tolerance: DEFAULT_TOLERANCE,
   };
 }

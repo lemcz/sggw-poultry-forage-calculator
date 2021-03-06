@@ -8,7 +8,7 @@ export interface NutrientItem {
   mode?: FieldMode;
 }
 
-export type FoodItemRecord = FoodItem | FoodCustomProperty;
+export type FoodItemRecord = (FoodItem & { property: string }) | FoodCustomProperty;
 
 export interface FoodItem {
   label: string;
@@ -18,4 +18,4 @@ export interface FoodItem {
   energy?: number;
 }
 
-export type FoodCustomProperty = Record<string, number | undefined>;
+export type FoodCustomProperty = { [key: string]: string | number };
