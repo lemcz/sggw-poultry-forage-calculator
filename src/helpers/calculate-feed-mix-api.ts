@@ -22,8 +22,7 @@ export function calculateFeedMix(
   const loadingInstance = ElLoading.service({ fullscreen: true, lock: true });
   return (
     axios
-      // TODO this should not point to the localhost
-      .post('http://localhost:3000/api/calculate-feed-mix', lpProblemParams)
+      .post('/api/calculate-feed-mix', lpProblemParams)
       // TODO add error handling here
       .then(({ data }) => data)
       .finally(() => loadingInstance.close())
