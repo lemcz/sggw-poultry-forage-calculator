@@ -39,7 +39,6 @@
       <SelectField
         style="width: 180px;"
         v-model="forageType"
-        v-on:change="changeForageRequirements(forageType)"
         :label="'Typ paszy'"
         :mode="FieldMode.Edit"
         :options="limitOptions"
@@ -126,8 +125,7 @@ export default defineComponent({
       cost: 420,
     });
     const nutrient = ref('');
-    // TODO add possibility to display amount of g's in kg's in a table (2 columns per nutrient)
-    // TODO edit the cells in the table on click
+    // TODO edit the cells in the table on click (values/1kg for specific products)
 
     const forageType = ref(ForageType.Grower);
     const limitOptions: { value: ForageType; label: string }[] = [
@@ -151,9 +149,13 @@ export default defineComponent({
       return getLimitsHeaders(limits, schema?.value);
     });
     let selectedProducts: FoodItemRecord[] = [];
-    // TODO Fix this up
-    const singularColumns = headers.value.slice(0, 2);
-    const doubleColumns = headers.value.slice(2);
+    const { singularColumns, doubleColumns } = headers.value.reduce(
+      (acc: { singularColumns: NutrientItem[]; doubleColumns: NutrientItem[] }, curr) => {
+        curr.ingredientValue ? acc.doubleColumns.push(curr) : acc.singularColumns.push(curr);
+        return acc;
+      },
+      { singularColumns: [], doubleColumns: [] },
+    );
 
     return {
       schema,
@@ -195,7 +197,6 @@ export default defineComponent({
             opType: 'min',
             options: { tolerance: tolerance.value },
           });
-          console.info('got some mix!', suggestedMix);
           if (suggestedMix.feasible) {
             ElMessage.success({
               type: 'success',
@@ -223,9 +224,6 @@ export default defineComponent({
           });
         }
       },
-      changeForageRequirements(type: ForageType) {
-        console.log('registered select field change', type, forageType.value, forageType);
-      },
       resetToDefaults() {
         const { products: defaultProducts, headers: defaultHeaders } = getDefaultState();
         products.value = defaultProducts as any;
@@ -242,6 +240,7 @@ export default defineComponent({
           label: nutrient.value,
           property: nutrient.value,
           type: FieldType.Number,
+          ingredientValue: true,
         };
         if (!nutrient.value || alreadyExists(headers.value, newNutrient)) {
           return;
@@ -274,13 +273,5 @@ export default defineComponent({
 <style scoped>
 h3 {
   margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
 }
 </style>

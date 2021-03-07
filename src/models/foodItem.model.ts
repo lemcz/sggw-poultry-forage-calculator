@@ -4,6 +4,7 @@ import { FieldMode } from '@/models/fieldMode';
 export interface NutrientItem {
   label: string;
   property: NutrientItemProperty;
+  ingredientValue: boolean;
   type?: FieldType;
   mode?: FieldMode;
 }

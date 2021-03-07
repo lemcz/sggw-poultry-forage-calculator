@@ -66,20 +66,20 @@ export type ForageTypeLimits = {
 class FoodItemSingleton {
   // TODO find a common object for property name and display label - headers & limits
   headers: NutrientItem[] = [
-    { label: 'Produkt', property: 'label', type: FieldType.Text },
-    { label: '%', property: 'percentage', type: FieldType.Number },
-    { label: 'Cena', property: 'cost', type: FieldType.Number },
-    { label: 'Sucha masa', property: 'dryWeight', type: FieldType.Number },
-    { label: 'Energia', property: 'energy', type: FieldType.Number },
-    { label: 'Białko ogólne (g)', property: 'protein', type: FieldType.Number },
-    { label: 'Lizyna (g)', property: 'lysine', type: FieldType.Number },
-    { label: 'Metionina (g)', property: 'methionine', type: FieldType.Number },
-    { label: 'Tryptofan (g)', property: 'tryptophan', type: FieldType.Number },
-    { label: 'Arginina (g)', property: 'arginine', type: FieldType.Number },
-    { label: 'Włókno (g)', property: 'fiber', type: FieldType.Number },
-    { label: 'Ca (g)', property: 'calcium', type: FieldType.Number },
-    { label: 'P ogólny (g)', property: 'phosphorus', type: FieldType.Number },
-    { label: 'Na (g)', property: 'sodium', type: FieldType.Number },
+    { label: 'Produkt', property: 'label', type: FieldType.Text, ingredientValue: false },
+    { label: '%', property: 'percentage', type: FieldType.Number, ingredientValue: false },
+    { label: 'Cena', property: 'cost', type: FieldType.Number, ingredientValue: true },
+    { label: 'Sucha masa', property: 'dryWeight', type: FieldType.Number, ingredientValue: true },
+    { label: 'Energia', property: 'energy', type: FieldType.Number, ingredientValue: true },
+    { label: 'Białko ogólne (g)', property: 'protein', type: FieldType.Number, ingredientValue: true },
+    { label: 'Lizyna (g)', property: 'lysine', type: FieldType.Number, ingredientValue: true },
+    { label: 'Metionina (g)', property: 'methionine', type: FieldType.Number, ingredientValue: true },
+    { label: 'Tryptofan (g)', property: 'tryptophan', type: FieldType.Number, ingredientValue: true },
+    { label: 'Arginina (g)', property: 'arginine', type: FieldType.Number, ingredientValue: true },
+    { label: 'Włókno (g)', property: 'fiber', type: FieldType.Number, ingredientValue: true },
+    { label: 'Ca (g)', property: 'calcium', type: FieldType.Number, ingredientValue: true },
+    { label: 'P ogólny (g)', property: 'phosphorus', type: FieldType.Number, ingredientValue: true },
+    { label: 'Na (g)', property: 'sodium', type: FieldType.Number, ingredientValue: true },
   ];
 
   limits: ForageTypeLimits = {
