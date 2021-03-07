@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header><h1>Kalkulator receptur mieszanek dla drobiu</h1></el-header>
-    <div style="margin: 15px;">
+    <div class="container">
       <FoodItemTable
         v-bind:model="products"
         v-bind:config="{
@@ -12,15 +12,40 @@
         @product-remove="removeProduct"
       ></FoodItemTable>
     </div>
-    <div class="container">
-      <div style="width: 180px;">
-        <form v-on:submit.prevent="addNutrient()">
-          <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
-          <div class="flex mt-mid"><AddButton :type="'primary'" /></div>
-        </form>
+    <div class="container flex-space-between">
+      <div>
+        <el-popconfirm
+          confirmButtonText="Tak"
+          cancelButtonText="Anuluj"
+          icon="el-icon-info"
+          iconColor="red"
+          title="Czy na pewno przywrócić dane do ustawień domyślnych?"
+          v-on:confirm="resetToDefaults()"
+        >
+          <template #reference>
+            <el-button type="info">Reset danych</el-button>
+          </template>
+        </el-popconfirm>
       </div>
-      <div class="ml-mid">
-        <form class="flex-column" v-on:submit.prevent="addIngredient()">
+      <div class="button-group">
+        <el-button type="primary" @click="addSubstanceDialogVisible = true">Dodaj substancję</el-button>
+        <el-dialog title="Dodaj substancję" v-model="addSubstanceDialogVisible">
+          <TextField v-model="nutrient" :label="'Substancja'" :mode="FieldMode.Edit"></TextField>
+          <template #footer>
+            <span class="dialog-footer button-group">
+              <el-button @click="addSubstanceDialogVisible = false">Anuluj</el-button>
+              <AddButton
+                @click="
+                  addNutrient();
+                  addSubstanceDialogVisible = false;
+                "
+                type="primary"
+              />
+            </span>
+          </template>
+        </el-dialog>
+        <el-button type="primary" @click="addIngredientDialogVisible = true">Dodaj składnik</el-button>
+        <el-dialog title="Dodaj składnik" v-model="addIngredientDialogVisible" width="75%" destroy-on-close center>
           <div class="flex-wrap">
             <component
               class="ml-mid"
@@ -31,10 +56,22 @@
               v-bind="field"
             ></component>
           </div>
-          <div class="flex m-mid"><AddButton :type="'primary'" /></div>
-        </form>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="addIngredientDialogVisible = false">Anuluj</el-button>
+              <AddButton
+                @click="
+                  addIngredient();
+                  addIngredientDialogVisible = false;
+                "
+                type="primary"
+              />
+            </span>
+          </template>
+        </el-dialog>
       </div>
     </div>
+    <el-divider></el-divider>
     <div class="container">
       <SelectField
         style="width: 180px;"
@@ -55,7 +92,6 @@
       <el-button class="ml-mid" type="success" v-on:click="calculateMinimalCostMix()">
         Wyznacz automatycznie
       </el-button>
-      <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
     <div class="container flex-column">
       <h3>
@@ -63,7 +99,7 @@
         <strong>{{ chosenForage }}</strong>
         :
       </h3>
-      <el-table border :data="limitsData">
+      <el-table stripe :data="limitsData">
         <el-table-column
           v-for="limitHeader in limitsHeaders"
           v-bind:key="limitHeader.property"
@@ -90,7 +126,7 @@ import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { FieldType, FoodItemService, ForageType, getLimitsData, getLimitsHeaders } from '@/helpers/food-item.service';
 import { fillProductWithDefaults, getDefaultState, getHeaderType } from '@/helpers/food-item-table';
 import { calculateFeedMix } from '@/helpers/calculate-feed-mix-api';
-import { getSuggestedPercentage } from '@/helpers/utils';
+import { extendFoodItemByProperty, getSuggestedPercentage } from '@/helpers/utils';
 
 export default defineComponent({
   name: 'ForageCalculator',
@@ -120,13 +156,11 @@ export default defineComponent({
     );
 
     const ingredient = ref({
-      label: 'Foobar',
-      percentage: 10,
-      cost: 420,
+      label: '',
+      percentage: 0,
+      cost: 0,
     });
     const nutrient = ref('');
-    // TODO edit the cells in the table on click (values/1kg for specific products)
-
     const forageType = ref(ForageType.Grower);
     const limitOptions: { value: ForageType; label: string }[] = [
       { value: ForageType.Starter, label: 'Starter' },
@@ -158,6 +192,8 @@ export default defineComponent({
     );
 
     return {
+      addSubstanceDialogVisible: ref(false),
+      addIngredientDialogVisible: ref(false),
       schema,
       headers,
       products,
@@ -258,6 +294,8 @@ export default defineComponent({
           return;
         }
 
+        ingredient.value = extendFoodItemByProperty(ingredient.value) as any;
+
         products.value = [...products.value, fillProductWithDefaults(ingredient.value, headers.value)] as any;
         ingredient.value = {
           label: '',
@@ -270,8 +308,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-</style>
+<style scoped></style>
