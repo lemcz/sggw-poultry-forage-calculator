@@ -3,11 +3,11 @@
     sum-text="Suma"
     max-height="740"
     :data="model"
-    @selection-change="toggleRowSelection"
     show-summary
     :summary-method="getSummaries"
+    @selection-change="toggleRowSelection"
   >
-    <el-table-column type="selection"></el-table-column>
+    <el-table-column type="selection" width="38px"></el-table-column>
     <el-table-column
       v-for="header in config.singularColumns"
       v-bind:key="header.property"
@@ -19,8 +19,7 @@
           {{ scope.row[header.property] }}
         </span>
         <component
-          v-if="header.property === 'percentage'"
-          :key="header.property"
+          v-else
           :is="'NumberField'"
           :mode="FieldMode.Edit"
           v-model="scope.row[header.property]"
@@ -30,21 +29,45 @@
       </template>
     </el-table-column>
     <el-table-column v-for="header in config.doubleColumns" v-bind:key="header.property" :label="header.label">
-      <el-table-column label="/ 1kg" :prop="header.property"></el-table-column>
+      <el-table-column label="/ 1kg" :prop="header.property">
+        <template #default="scope">
+          <span v-if="!scope.row.edit">
+            {{ scope.row[header.property] }}
+          </span>
+          <component
+            v-else
+            :is="'NumberField'"
+            :mode="FieldMode.Edit"
+            v-model="scope.row[header.property]"
+            :min="0"
+            :max="1000"
+          ></component>
+        </template>
+      </el-table-column>
       <el-table-column label="w mieszance" :prop="header.property">
         <template #default="scope">
           <span class="ml-mid">{{ getMixValueCell(scope.row, header) }}</span>
         </template>
       </el-table-column>
     </el-table-column>
-    <el-table-column label="Akcje">
+    <el-table-column label="Akcje" min-width="120px">
       <template #default="scope">
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          icon="el-icon-delete"
-        ></el-button>
+        <div class="flex">
+          <el-button
+            v-if="!scope.row.edit"
+            size="mini"
+            type="info"
+            @click="scope.row.edit = true"
+            icon="el-icon-edit"
+          ></el-button>
+          <el-button v-else size="mini" type="primary" @click="scope.row.edit = false" icon="el-icon-check"></el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)"
+            icon="el-icon-delete"
+          ></el-button>
+        </div>
       </template>
     </el-table-column>
   </el-table>
@@ -66,7 +89,6 @@ export interface FoodItemModel {
   placeholder: string;
 }
 
-// TODO edit values in specific row when we click on an edit button
 export default defineComponent({
   name: 'FoodItemTable',
   props: {
@@ -115,4 +137,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-button {
+  max-width: 44px;
+}
+</style>
