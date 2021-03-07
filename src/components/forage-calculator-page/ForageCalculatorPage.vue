@@ -6,24 +6,24 @@
         v-bind:model="products"
         v-bind:config="{
           singularColumns,
-          doubleColumns
+          doubleColumns,
         }"
         @select-change="updateSelected"
         @product-remove="removeProduct"
       ></FoodItemTable>
     </div>
-    <div style="display: flex; margin: 15px;">
+    <div class="container">
       <div style="width: 180px;">
         <form v-on:submit.prevent="addNutrient()">
           <TextField v-model="nutrient" :label="'Składnik odżywczy'" :mode="FieldMode.Edit"></TextField>
-          <div style="margin: 5px"><AddButton :type="'primary'" /></div>
+          <div class="flex mt-mid"><AddButton :type="'primary'" /></div>
         </form>
       </div>
-      <div style="margin-left: 10px;">
-        <form class="flex-wrap" v-on:submit.prevent="addIngredient()">
+      <div class="ml-mid">
+        <form class="flex-column" v-on:submit.prevent="addIngredient()">
           <div class="flex-wrap">
             <component
-              style="margin-left: 5px"
+              class="ml-mid"
               v-for="field in schema"
               :key="field.property"
               :is="field.type"
@@ -31,11 +31,11 @@
               v-bind="field"
             ></component>
           </div>
-          <div style="margin: 5px"><AddButton :type="'primary'" /></div>
+          <div class="flex m-mid"><AddButton :type="'primary'" /></div>
         </form>
       </div>
     </div>
-    <div style="display: flex; margin: 15px;">
+    <div class="container">
       <SelectField
         style="width: 180px;"
         v-model="forageType"
@@ -45,35 +45,34 @@
         :options="limitOptions"
       ></SelectField>
       <NumberField
-        style="width: 180px; margin-left: 10px;"
+        class="ml-mid"
+        style="width: 180px;"
         :label="'Tolerancja błędu wyniku'"
         v-model="tolerance"
         :mode="FieldMode.Edit"
         :max="1"
         :step="0.01"
       ></NumberField>
-      <el-button style="margin-left: 10px" type="success" v-on:click="calculateMinimalCostMix()">
+      <el-button class="ml-mid" type="success" v-on:click="calculateMinimalCostMix()">
         Wyznacz automatycznie
       </el-button>
       <el-button type="info" v-on:click="resetToDefaults()">Reset danych</el-button>
     </div>
-    <div style="display: flex; flex-direction: column; margin: 15px;">
-      <div>
-        <h3>
-          Zalecane w 1 kg paszy dla grupy produkcyjnej
-          <strong>{{ chosenForage }}</strong>
-          :
-        </h3>
-        <el-table border :data="limitsData">
-          <el-table-column
-            v-for="limitHeader in limitsHeaders"
-            v-bind:key="limitHeader.property"
-            :prop="limitHeader.property"
-            :label="limitHeader.label"
-          >
-          </el-table-column>
-        </el-table>
-      </div>
+    <div class="container flex-column">
+      <h3>
+        Zalecane w 1 kg paszy dla grupy produkcyjnej
+        <strong>{{ chosenForage }}</strong>
+        :
+      </h3>
+      <el-table border :data="limitsData">
+        <el-table-column
+          v-for="limitHeader in limitsHeaders"
+          v-bind:key="limitHeader.property"
+          :prop="limitHeader.property"
+          :label="limitHeader.label"
+        >
+        </el-table-column>
+      </el-table>
     </div>
   </el-container>
 </template>
@@ -283,14 +282,5 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-
-.flex-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
 }
 </style>

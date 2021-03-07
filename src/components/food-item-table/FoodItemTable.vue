@@ -33,7 +33,7 @@
       <el-table-column label="/ 1kg" :prop="header.property"></el-table-column>
       <el-table-column label="w mieszance" :prop="header.property">
         <template #default="scope">
-          <span style="margin-left: 10px">{{ getMixValueCell(scope.row, header) }}</span>
+          <span class="ml-mid">{{ getMixValueCell(scope.row, header) }}</span>
         </template>
       </el-table-column>
     </el-table-column>

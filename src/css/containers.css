@@ -1,0 +1,8 @@
+:root {
+  --margin-container: 15px;
+}
+
+.container {
+  display: flex;
+  margin: var(--margin-container);
+}
