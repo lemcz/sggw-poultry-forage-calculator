@@ -32,3 +32,17 @@
   flex-wrap: wrap;
   align-items: center;
 }
+
+.flex-space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-group button:not(:first-child) {
+  margin-left: var(--default-margin);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
