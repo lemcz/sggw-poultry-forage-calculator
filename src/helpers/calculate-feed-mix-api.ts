@@ -18,7 +18,6 @@ export function calculateFeedMix(
     variables,
     options,
   };
-  console.info('lp problem params:', lpProblemParams);
   const loadingInstance = ElLoading.service({ fullscreen: true, lock: true });
   return (
     axios
