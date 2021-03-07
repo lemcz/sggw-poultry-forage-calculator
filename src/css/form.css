@@ -1,0 +1,25 @@
+:root {
+  --label-font-size: 16px;
+  --border-color: #dcdfe6;
+  --border-color__focus: #409eff;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input label {
+  font-size: var(--label-font-size);
+  color: var(--text-color);
+  margin-right: auto;
+}
+
+.form-input input {
+  border: 1px solid var(--border-color);
+}
+
+.form-input input:focus {
+  outline: var(--border-color__focus);
+  border-color: var(--border-color__focus);
+}

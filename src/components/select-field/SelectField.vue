@@ -35,9 +35,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.form-input {
-  display: flex;
-  flex-direction: column;
-}
-</style>
+<style scoped></style>
