@@ -11,6 +11,7 @@
     <el-table-column
       v-for="header in config.singularColumns"
       v-bind:key="header.property"
+      fixed
       :label="header.label"
       :prop="header.property"
     >
@@ -75,7 +76,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { FoodItemRecord } from '@/models/foodItem.model';
+import { FoodItemRecord, NutrientItem } from '@/models/foodItem.model';
 import { TFieldType } from '@/helpers/food-item-table';
 import { FieldMode } from '@/models/fieldMode';
 import NumberField from '@/components/number-field/NumberField.vue';
@@ -93,7 +94,10 @@ export default defineComponent({
   name: 'FoodItemTable',
   props: {
     model: Array as () => FoodItemRecord[],
-    config: Object as () => { singularColumns: any[]; doubleColumns: any[] },
+    config: Object as () => {
+      singularColumns: NutrientItem[];
+      doubleColumns: NutrientItem[];
+    },
   },
   components: {
     NumberField,
