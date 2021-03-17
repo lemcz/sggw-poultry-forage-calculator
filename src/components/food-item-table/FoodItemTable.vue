@@ -14,6 +14,7 @@
       fixed
       :label="header.label"
       :prop="header.property"
+      :width="header.property === 'label' ? '300px' : ''"
     >
       <template #default="scope">
         <span v-if="header.property !== 'percentage'">
