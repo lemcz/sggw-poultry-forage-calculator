@@ -182,7 +182,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta jęczmienna',
       percentage: 0,
-      cost: 22.6,
+      cost: 0.83,
       dryWeight: 880,
       energy: 11.85,
       protein: 111,
@@ -198,7 +198,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta pszenna',
       percentage: 0,
-      cost: 18.3,
+      cost: 1.1,
       dryWeight: 880,
       energy: 12.85,
       protein: 118,
@@ -214,7 +214,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta pszenżytnia',
       percentage: 0,
-      cost: 30,
+      cost: 1,
       dryWeight: 880,
       energy: 12.6,
       protein: 120,
@@ -230,7 +230,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta kukurydziana',
       percentage: 0,
-      cost: 25,
+      cost: 0.9,
       dryWeight: 880,
       energy: 13.75,
       protein: 93,
@@ -246,7 +246,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta z owsa',
       percentage: 0,
-      cost: 28,
+      cost: 0.65,
       dryWeight: 880,
       energy: 10.75,
       protein: 114,
@@ -262,7 +262,7 @@ class FoodItemSingleton {
     {
       label: 'Otręby pszenne',
       percentage: 0,
-      cost: 15,
+      cost: 0.68,
       dryWeight: 880,
       energy: 8.5,
       protein: 143,
@@ -278,7 +278,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta z bobiku',
       percentage: 0,
-      cost: 20,
+      cost: 1.2,
       dryWeight: 880,
       energy: 10.1,
       protein: 268,
@@ -294,7 +294,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta z łubinu żółtego',
       percentage: 0,
-      cost: 18,
+      cost: 1.4,
       dryWeight: 880,
       energy: 8.3,
       protein: 390,
@@ -310,7 +310,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta z grochu',
       percentage: 0,
-      cost: 20,
+      cost: 2.5,
       dryWeight: 880,
       energy: 10.35,
       protein: 209,
@@ -326,7 +326,7 @@ class FoodItemSingleton {
     {
       label: 'Pełnotłusta śruta z rzepaku',
       percentage: 0,
-      cost: 28,
+      cost: 14.3,
       dryWeight: 930,
       energy: 18.85,
       protein: 192,
@@ -342,7 +342,7 @@ class FoodItemSingleton {
     {
       label: 'Pełnotlusta soja ekstrudowana',
       percentage: 0,
-      cost: 28,
+      cost: 14,
       dryWeight: 930,
       energy: 13.55,
       protein: 350,
@@ -358,7 +358,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta poekstrakcyjna rzepakowa',
       percentage: 0,
-      cost: 20,
+      cost: 1.4,
       dryWeight: 880,
       energy: 7.45,
       protein: 340,
@@ -374,7 +374,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta poekstrakcyjna sojowa (42-46)',
       percentage: 0,
-      cost: 27,
+      cost: 2.3,
       dryWeight: 880,
       energy: 8.6,
       protein: 420,
@@ -390,7 +390,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta poekstrakcyjna sojowa (>46 b.o.)',
       percentage: 0,
-      cost: 13,
+      cost: 2,
       dryWeight: 880,
       energy: 9,
       protein: 466,
@@ -406,7 +406,7 @@ class FoodItemSingleton {
     {
       label: 'Śruta poekstrakcyjna słonecznikowa (obł)',
       percentage: 0,
-      cost: 17,
+      cost: 1.39,
       dryWeight: 880,
       energy: 6.5,
       protein: 340,
@@ -422,7 +422,7 @@ class FoodItemSingleton {
     {
       label: 'DDGS kukurydziany',
       percentage: 0,
-      cost: 19,
+      cost: 1.44,
       dryWeight: 880,
       energy: 10.69,
       protein: 260,
@@ -438,7 +438,7 @@ class FoodItemSingleton {
     {
       label: 'Drożdże pastewne',
       percentage: 0,
-      cost: 25,
+      cost: 3.5,
       dryWeight: 900,
       energy: 10.3,
       protein: 426,
@@ -454,7 +454,7 @@ class FoodItemSingleton {
     {
       label: 'Mleko odtłuszczone',
       percentage: 0,
-      cost: 20,
+      cost: 7,
       dryWeight: 930,
       energy: 9.85,
       protein: 327,
@@ -470,7 +470,7 @@ class FoodItemSingleton {
     {
       label: 'Serwatka',
       percentage: 0,
-      cost: 7,
+      cost: 0.5,
       dryWeight: 930,
       energy: 8,
       protein: 122,
@@ -486,7 +486,7 @@ class FoodItemSingleton {
     {
       label: 'Susz z lucerny',
       percentage: 0,
-      cost: 26,
+      cost: 2,
       dryWeight: 910,
       energy: 5.45,
       protein: 202,
@@ -502,7 +502,7 @@ class FoodItemSingleton {
     {
       label: 'Olej',
       percentage: 0,
-      cost: 30,
+      cost: 3.9,
       dryWeight: 1000,
       energy: 37.65,
       protein: 0,
@@ -518,7 +518,7 @@ class FoodItemSingleton {
     {
       label: 'Mączka rybna (65% b.o.)',
       percentage: 0,
-      cost: 18,
+      cost: 6,
       dryWeight: 910,
       energy: 12.2,
       protein: 647,
@@ -534,7 +534,7 @@ class FoodItemSingleton {
     {
       label: 'Metionina (50%)',
       percentage: 0,
-      cost: 18,
+      cost: 25,
       dryWeight: 900,
       energy: 12.2,
       protein: 0,
@@ -550,7 +550,7 @@ class FoodItemSingleton {
     {
       label: 'Lizyna (50%)',
       percentage: 0,
-      cost: 30,
+      cost: 19,
       dryWeight: 900,
       energy: 0,
       protein: 0,
@@ -566,7 +566,7 @@ class FoodItemSingleton {
     {
       label: 'Kreda pastewna',
       percentage: 0,
-      cost: 5,
+      cost: 0.48,
       dryWeight: 900,
       energy: 0,
       protein: 0,
@@ -582,7 +582,7 @@ class FoodItemSingleton {
     {
       label: 'Fosforan jednowapniowy',
       percentage: 0,
-      cost: 29,
+      cost: 3,
       dryWeight: 900,
       energy: 0,
       protein: 0,
@@ -598,7 +598,7 @@ class FoodItemSingleton {
     {
       label: 'NaCl',
       percentage: 0,
-      cost: 20,
+      cost: 0.74,
       dryWeight: 900,
       energy: 0,
       protein: 0,
@@ -614,7 +614,7 @@ class FoodItemSingleton {
     {
       label: 'Premix (7% lizyny)',
       percentage: 0,
-      cost: 35,
+      cost: 3.8,
       dryWeight: 900,
       energy: 0,
       protein: 0,
